@@ -1,0 +1,6 @@
+[submodule "openwrt"]
+	path = overthebox-openwrt
+	url = https://github.com/ovh/overthebox-openwrt.git
+[submodule "feeds"]
+	path = overthebox-feeds
+	url = https://github.com/ovh/overthebox-feeds.git
