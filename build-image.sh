@@ -15,6 +15,24 @@ cd overthebox-openwrt
 
 make defconfig
 
+
+# compile tools and toolchain
+make tools/install -j$(nproc)
+make toolchain/install -j$(nproc)
+make package/toolchain/compile -j$(nproc)
+
+# compile first package to avoid compilation error :/
+make package/toolchain/install -j$(nproc)
+make package/lua/host/compile -j$(nproc)
+make package/luci-base/host/compile -j$(nproc)
+make package/intltool/host/compile -j$(nproc)
+make package/gettext-full/host/compile -j$(nproc)
+make package/grub2-efi/host/compile -j$(nproc)
+make package/grub2/host/compile -j$(nproc)
+make package/ncurses/install -j$(nproc)
+make package/ncurses/host/install -j$(nproc)
+
+# fulle compile
 make -j$(nproc)
 
 ./scripts/diffconfig.sh  > bin/x86-glibc/config
