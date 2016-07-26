@@ -19,3 +19,8 @@ make -j$(nproc)
 
 ./scripts/diffconfig.sh  > bin/x86-glibc/config
 
+if [ -n "$RSYNC" ];
+then
+    TAG=$(git describe --tags --match='v[0-9].*')
+    rsync -a bin/x86-glibc/ $RSYNC/$TAG
+fi
