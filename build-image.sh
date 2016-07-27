@@ -4,7 +4,6 @@ set -e
 grep -v " overthebox " overthebox-openwrt/feeds.conf.default > overthebox-openwrt/feeds.conf
 echo "src-link overthebox $(readlink -f overthebox-feeds)" >> overthebox-openwrt/feeds.conf
 
-cp config overthebox-openwrt/.config
 
 cd overthebox-openwrt
 ./scripts/feeds update -a
@@ -13,6 +12,8 @@ cd overthebox-openwrt
 ./scripts/feeds install -p overthebox -f dnsmasq
 ./scripts/feeds install -a
 
+
+cp ../config .config
 make defconfig
 
 
