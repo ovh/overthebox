@@ -5,3 +5,4 @@
 [submodule "feeds"]
 	path = overthebox-feeds
 	url = https://github.com/ovh/overthebox-feeds.git
+	branch = v0.4
