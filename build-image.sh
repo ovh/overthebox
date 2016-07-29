@@ -37,6 +37,8 @@ make package/ncurses/host/install -j$(nproc)
 make -j$(nproc)
 
 ./scripts/diffconfig.sh  > bin/x86-glibc/config
+cp -a bin/x86-glibc/packages/overthebox bin/x86-glibc/packages/ovh
+cp ./staging_dir/target-x86_64_glibc-2.21/root-x86/lib/upgrade/platform.sh bin/x86-glibc/
 
 if [ -n "$RSYNC" ];
 then
