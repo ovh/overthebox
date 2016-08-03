@@ -16,6 +16,7 @@ cd overthebox-openwrt
 cp ../config .config
 make defconfig
 
+rm -fr bin/x86-glibc/
 
 # compile tools and toolchain
 make tools/install -j$(nproc)
