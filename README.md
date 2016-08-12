@@ -56,6 +56,15 @@ $ git submodule
  4ea78f7a1407657399fd865dfacd301d98a25414 overthebox-openwrt (heads/overthebox)
 ```
 
+## dependencies
+
+```shell
+$ sudo apt-get install -y autoconf bc binutils bison bsdmainutils build-essential curl \
+    fastjar flex gawk gcc-multilib genisoimage gettext git-core intltool libncurses5-dev \
+    libssl-dev lua5.1 nano ncurses-term openssl python python-dev ruby sdcc sharutils \
+    subversion texinfo unzip uuid-dev uuid-runtime wget xsltproc zlib1g-dev
+```
+
 ## building packages
 
 Building package use a SDK already compiled by us.
