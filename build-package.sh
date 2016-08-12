@@ -22,6 +22,9 @@ do
     make -C sdk package/$I/install
 done
 
+make -C sdk package/index
+mv sdk/bin/x86-glibc/packages/overthebox/Package* overthebox-feeds
+
 
 
 
