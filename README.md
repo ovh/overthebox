@@ -62,10 +62,11 @@ Building package use a SDK already compiled by us.
 ```shell
 $ ./build-package.sh
 ```
+Files are located in sdk/bin/x86-glibc/packages/ directory.
 
 ## building full image
 
 ```shell
 $ ./build-image.sh
 ```
-
+Files are located in overthebox-openwrt/bin/x86-glibc/ directory.
