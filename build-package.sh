@@ -22,6 +22,6 @@ do
     make -C sdk package/$I/install
 done
 
-
+make -C sdk package/index
 
 
