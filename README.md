@@ -1,81 +1,71 @@
-# Overthebox
+# OverTheBox
 
-Overthebox is an open source solution developed by OVH to aggregate and encrypt multiple internet connections and terminates it over OVH/Cloud infrastructure which make clients benefit security, reliability, net neutrality, as well as dedicated public IP.
+OverTheBox is an open source solution developed by OVH to aggregate and encrypt multiple internet connections and terminates it over OVH/Cloud infrastructure which make clients benefit security, reliability, net neutrality, as well as dedicated public IP.
 
-The aggregation is based on MPTCP, which is ISP, WAN type, and latency independent "whether it was Fiber, VDSL, SHDSL, ADSL or even 4G, ", different scenarios can be configured to have either aggregation, load-balancing or failover based on MPTCP or even Openwrt mwan3 package.
+The aggregation is based on MPTCP, which is ISP, WAN type, and latency independent "whether it was Fiber, VDSL, SHDSL, ADSL or even 4G", different scenarios can be configured to have either aggregation, load-balancing or failover based on MPTCP or even OpenWRT mwan3 package.
 
-The solution takes advantage of the latest Openwrt system, which is user friendly and also the possibility of installing other packages like VPN, QoS, routing protocols, monitoring, etc. through web-interface or terminal.
+The solution takes advantage of the OpenWRT system, which is user friendly and also the possibility of installing other packages like VPN, QoS, routing protocols, monitoring, etc. through web-interface or terminal.
 
 
-More information is available here :
+More information is available here:
 [https://www.ovhtelecom.fr/overthebox/](https://www.ovhtelecom.fr/overthebox/)
 
 
-## Prerequisite
+## Prerequisites
 
 * an x86 machine
-* 2Gb of RAM
+* 2GiB of RAM
 
 
 ## Install from pre-compiled images
 
-Guide to install the image is available on (french) :
-[https://docs.ovh.com/pages/releaseview.action?pageId=18121070](https://docs.ovh.com/pages/releaseview.action?pageId=18121070)
+Guide to install the image is available in french [here](https://www.ovhtelecom.fr/overthebox/guides.xml).  
+You can download all supported images [here](http://downloads.overthebox.ovh/trunk/x86/64/).
 
 
-### image :
-[http://downloads.overthebox.ovh/trunk/x86/64/openwrt-x86-64-embedded-ext4.img.gz](http://downloads.overthebox.ovh/trunk/x86/64/openwrt-x86-64-embedded-ext4.img.gz)
+## Install from source
 
+### Dependencies
 
-### virtualbox image :
-[http://downloads.overthebox.ovh/trunk/x86/64/openwrt-x86-64-combined-ext4.vdi](http://downloads.overthebox.ovh/trunk/x86/64/openwrt-x86-64-combined-ext4.vdi)
+You need a classical build environnement like `build-essential` on debian and `git`.  
+Some feeds might not available over `git` but only via `subversion` or `mercurial`.
 
-
-## install from source
-
-```shell
-$ git clone https://github.com/ovh/overthebox.git --recursive
-```
-
-or
+### Prepare
 
 ```shell
 $ git clone https://github.com/ovh/overthebox.git
 $ cd overthebox
-$ git submodule update --init
+$ git submodule update --init --remote
 ```
 
-
-## choose your version
+or choose a specific branch:
 
 ```shell
-$ git checkout v0.4
-$ git submodule update --remote
-$ git submodule
-+6b9ca16a1231d43968be80c6a114cc7c1bbfc9bc overthebox-feeds (v0.4.7)
- 4ea78f7a1407657399fd865dfacd301d98a25414 overthebox-openwrt (heads/overthebox)
+$ git clone https://github.com/ovh/overthebox.git --branch v0.4
+$ cd overthebox
+$ git submodule update --init --remote
 ```
 
-## dependencies
-
-```shell
-$ sudo apt-get install -y autoconf bc binutils bison bsdmainutils build-essential curl \
-    fastjar flex gawk gcc-multilib genisoimage gettext git-core intltool libncurses5-dev \
-    libssl-dev lua5.1 nano ncurses-term openssl python python-dev ruby sdcc sharutils \
-    subversion texinfo unzip uuid-dev uuid-runtime wget xsltproc zlib1g-dev
-```
-
-## building packages
+### Build all packages
 
 Building package use a SDK already compiled by us.
 ```shell
 $ ./build-package.sh
 ```
-Files are located in sdk/bin/x86-glibc/packages/ directory.
+Files are located in `sdk/bin/x86-glibc/packages/` directory.
 
-## building full image
+### Build full image
 
 ```shell
 $ ./build-image.sh
 ```
-Files are located in overthebox-openwrt/bin/x86-glibc/ directory.
+Files are located in `overthebox-openwrt/bin/x86-glibc/` directory.
+
+
+## Credits
+
+Our solution is mainly based on:
+
+* [OpenWRT](https://openwrt.org)
+* [MultiPath TCP (MPTCP)](https://multipath-tcp.org)
+* [Shadowsocks](https://shadowsocks.org)
