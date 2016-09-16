@@ -7,9 +7,7 @@ echo "src-link overthebox $(readlink -f overthebox-feeds)" >> overthebox-openwrt
 
 cd overthebox-openwrt
 ./scripts/feeds update -a
-./scripts/feeds install -a -p overthebox
-./scripts/feeds install -p overthebox -f netifd
-./scripts/feeds install -p overthebox -f dnsmasq
+./scripts/feeds install -a -f -p overthebox
 ./scripts/feeds install -a
 
 
