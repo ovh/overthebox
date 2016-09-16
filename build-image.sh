@@ -34,7 +34,12 @@ make package/grub2/host/compile -j$(nproc)
 make package/ncurses/install -j$(nproc)
 make package/ncurses/host/install -j$(nproc)
 
-# fulle compile
+for I in $(cd ../overthebox-feeds; ls */Makefile |xargs dirname);
+do
+    make package/$I/clean
+done
+
+# full compile
 make -j$(nproc)
 
 ./scripts/diffconfig.sh  > bin/x86-glibc/config
