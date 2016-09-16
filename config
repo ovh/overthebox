@@ -1012,5 +1012,6 @@ CONFIG_PACKAGE_glorytun-udp=y
 CONFIG_PACKAGE_grub2-efi=y
 # CONFIG_PACKAGE_grub2-efi-editenv is not set
 CONFIG_PACKAGE_iptraf-ng=y
+CONFIG_PACKAGE_nano=m
 # CONFIG_SSP_SUPPORT is not set
 # CONFIG_VERSION_FILENAMES is not set
