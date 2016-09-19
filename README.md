@@ -46,15 +46,8 @@ $ cd overthebox
 $ git submodule update --init --remote
 ```
 
-### Build all packages
 
-Building package use a SDK already compiled by us.
-```shell
-$ ./build-package.sh
-```
-Files are located in `sdk/bin/x86-glibc/packages/` directory.
-
-### Build full image
+### Build
 
 ```shell
 $ ./build-image.sh
