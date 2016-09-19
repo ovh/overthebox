@@ -1,20 +1,18 @@
 #!/usr/bin/env bash
 set -e
 
-grep -v " overthebox " overthebox-openwrt/feeds.conf.default > overthebox-openwrt/feeds.conf
-echo "src-link overthebox $(readlink -f overthebox-feeds)" >> overthebox-openwrt/feeds.conf
-
+rsync -avh otb/ overthebox-openwrt/
 
 cd overthebox-openwrt
+
+make dirclean
+
 ./scripts/feeds update -a
 ./scripts/feeds install -a -f -p overthebox
 ./scripts/feeds install -a
 
-
 cp ../config .config
 make defconfig
-
-rm -fr bin/x86-glibc/
 
 # compile tools and toolchain
 make tools/install -j$(nproc)
@@ -31,11 +29,6 @@ make package/grub2-efi/host/compile -j$(nproc)
 make package/grub2/host/compile -j$(nproc)
 make package/ncurses/install -j$(nproc)
 make package/ncurses/host/install -j$(nproc)
-
-for I in $(cd ../overthebox-feeds; ls */Makefile |xargs dirname);
-do
-    make package/$I/clean
-done
 
 # full compile
 make -j$(nproc)
