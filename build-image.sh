@@ -5,11 +5,11 @@ rsync -avh otb/ overthebox-openwrt/
 
 cd overthebox-openwrt
 
-make dirclean
-
 ./scripts/feeds update -a
 ./scripts/feeds install -a -f -p overthebox
 ./scripts/feeds install -a
+
+make dirclean
 
 cp ../config .config
 make defconfig
