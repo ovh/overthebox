@@ -2,6 +2,3 @@
 	path = overthebox-openwrt
 	url = https://github.com/ovh/overthebox-openwrt.git
 	branch = overthebox
-[submodule "feeds"]
-	path = overthebox-feeds
-	url = https://github.com/ovh/overthebox-feeds.git
