@@ -35,10 +35,9 @@ Some feeds might not available over `git` but only via `subversion` or `mercuria
 ```shell
 $ git clone https://github.com/ovh/overthebox.git
 $ cd overthebox
-$ git submodule update --init --remote
 ```
 
-or choose a specific branch:
+or choose a specific branch, for old releases you may need to update submodules:
 
 ```shell
 $ git clone https://github.com/ovh/overthebox.git --branch v0.4

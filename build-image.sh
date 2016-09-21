@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
+[ -d overthebox-openwrt ] || \
+    git clone --depth=1 https://github.com/ovh/overthebox-openwrt --branch overthebox
+
 rsync -avh otb/ overthebox-openwrt/
 
 cd overthebox-openwrt
