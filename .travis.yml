@@ -1,0 +1,14 @@
+sudo: required
+dist: trusty
+language: c
+compiler: gcc
+addons:
+  apt:
+    packages:
+    - libxml-parser-perl
+before_script:
+- wget https://plik.root.gg/clients/linux-amd64/plik && chmod +x ./plik
+- echo 'URL = "https://plik.root.gg"' > ~/.plikrc
+script:
+- ./build-images.sh
+- find bin -type f | xargs ./plik
