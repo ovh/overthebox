@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index 8c8f9fd..8ea9718 100644
+--- a/Makefile
++++ b/Makefile
+@@ -11,7 +11,7 @@ MBR_LIB_OBJS=$(MBR_LIBS:=.o)
+ LIB_HEADERS=$(LIB_NAMES:=.h)
+ DEPEND= makedepend $(CXXFLAGS)
+ 
+-all:	cgdisk gdisk sgdisk fixparts
++all:	gdisk
+ 
+ gdisk:	$(LIB_OBJS) gdisk.o gpttext.o
+ 	$(CXX) $(LIB_OBJS) gdisk.o gpttext.o $(LDFLAGS) -luuid -o gdisk
