@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-BRANCH=$(git rev-parse --abbrev-ref HEAD)
+BRANCH=chaos_calmer
 TAG=$(git describe --tags --match='v[0-9].*')
 
 [ -d overthebox-openwrt ] || \
@@ -20,7 +20,7 @@ make dirclean
 cp ../config .config
 make defconfig
 
-make -j$(nproc)
+make -j1 V=s | grep -i error
 
 ./scripts/diffconfig.sh  > bin/x86-glibc/config
 cp -a bin/x86-glibc/packages/overthebox bin/x86-glibc/packages/ovh
