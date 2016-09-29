@@ -20,7 +20,7 @@ make dirclean
 cp ../config .config
 make defconfig
 
-make -j1 V=s
+make -j1 V=s | grep -i error
 
 ./scripts/diffconfig.sh  > bin/x86-glibc/config
 cp -a bin/x86-glibc/packages/overthebox bin/x86-glibc/packages/ovh
