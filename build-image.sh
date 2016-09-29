@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-BRANCH=$(git rev-parse --abbrev-ref HEAD)
+BRANCH=chaos_calmer
 TAG=$(git describe --tags --match='v[0-9].*')
 
 [ -d overthebox-openwrt ] || \
