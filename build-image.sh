@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-export OTB_BRANCH=`git rev-parse --abbrev-ref HEAD 2>/dev/null`
 export OTB_TAG=`git describe --tags --match='v[0-9].*' 2>/dev/null`
 export OTB_VERSION=${OTB_TAG#v}
 
 [ -d overthebox-openwrt ] || \
-    git clone --depth=1 https://github.com/ovh/overthebox-openwrt --branch ${OTB_BRANCH}
+    git clone --depth=1 https://github.com/ovh/overthebox-openwrt --branch master
 
 rsync -avh otb/ overthebox-openwrt/
 
