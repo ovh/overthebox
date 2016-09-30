@@ -5,6 +5,7 @@ compiler: gcc
 addons:
   apt:
     packages:
+    - uuid-dev
     - libxml-parser-perl
 before_script:
 - wget https://plik.root.gg/clients/linux-amd64/plik && chmod +x ./plik

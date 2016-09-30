@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-BRANCH=$(git rev-parse --abbrev-ref HEAD)
-TAG=$(git describe --tags --match='v[0-9].*')
+export OTB_TAG=`git describe --tags --match='v[0-9].*' 2>/dev/null`
+export OTB_VERSION=${OTB_TAG#v}
 
 [ -d overthebox-openwrt ] || \
-    git clone --depth=1 https://github.com/ovh/overthebox-openwrt --branch ${BRANCH}
+    git clone --depth=1 https://github.com/ovh/overthebox-openwrt --branch master
 
 rsync -avh otb/ overthebox-openwrt/
 
@@ -26,4 +26,4 @@ make -j$(nproc)
 cp -a bin/x86-glibc/packages/overthebox bin/x86-glibc/packages/ovh
 cp ./staging_dir/target-x86_64_glibc-2.21/root-x86/lib/upgrade/platform.sh bin/x86-glibc/
 
-[ -n "${RSYNC}" ] && rsync -a bin/x86-glibc/ ${RSYNC}/${TAG}
+[ -n "${RSYNC}" ] && rsync -a bin/x86-glibc/ ${RSYNC}/${OTB_TAG}
