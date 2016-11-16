@@ -47,6 +47,9 @@ platform_export_bootdevice() {
 						fi
 					done
 				})
+				if [ -z "$BOOTPART" ]; then
+					uevent="/sys/class/block/${$BOOTPART##*/}/uevent"
+				fi
 				return 0
 			;;
 			PARTUUID=[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-02)

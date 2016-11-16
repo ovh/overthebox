@@ -13,31 +13,36 @@ tools-y :=
 
 ifeq ($(CONFIG_EXTERNAL_TOOLCHAIN),)
   BUILD_TOOLCHAIN := y
-endif
-ifdef CONFIG_GCC_USE_GRAPHITE
-  ifeq ($(CONFIG_GCC_USE_SYSTEM_PPL_CLOOG),)
-    BUILD_PPL_CLOOG = y
+  ifdef CONFIG_GCC_USE_GRAPHITE
+    ifneq ($(CONFIG_GCC_VERSION_4_8),)
+      ifeq ($(CONFIG_GCC_USE_SYSTEM_PPL_CLOOG),)
+        BUILD_PPL_CLOOG = y
+      endif
+    else
+      BUILD_ISL = y
+    endif
   endif
 endif
-ifneq ($(CONFIG_PACKAGE_kmod-b43)$(CONFIG_PACKAGE_kmod-b43legacy)$(CONFIG_BRCMSMAC_USE_FW_FROM_WL),)
+ifneq ($(CONFIG_PACKAGE_kmod-b43)$(CONFIG_PACKAGE_b43legacy-firmware)$(CONFIG_BRCMSMAC_USE_FW_FROM_WL),)
   BUILD_B43_TOOLS = y
 endif
 
 tools-$(BUILD_TOOLCHAIN) += gmp mpfr mpc libelf expat
 tools-y += m4 libtool autoconf automake flex bison pkg-config sed mklibs
 tools-y += sstrip make-ext4fs e2fsprogs mtd-utils mkimage
-tools-y += firmware-utils patch-image patch quilt yaffs2 flock padjffs2
+tools-y += firmware-utils patch-image patch quilt yaffs2 padjffs2
 tools-y += mm-macros missing-macros xz cmake scons bc findutils gengetopt patchelf
 tools-$(CONFIG_TARGET_orion_generic) += wrt350nv2-builder upslug2
 tools-$(CONFIG_powerpc) += upx
 tools-$(CONFIG_TARGET_x86) += qemu
-tools-$(CONFIG_EFI_IMAGES) += gptfdisk
 tools-$(CONFIG_TARGET_mxs) += elftosb sdimage
-tools-$(CONFIG_TARGET_brcm2708)$(CONFIG_TARGET_sunxi)$(CONFIG_TARGET_mxs)$(CONFIG_EFI_IMAGES) += mtools dosfstools
+tools-$(CONFIG_EFI_IMAGES) += gptfdisk
+tools-$(CONFIG_TARGET_brcm2708)$(CONFIG_TARGET_sunxi)$(CONFIG_TARGET_mxs)$(CONFIG_TARGET_omap)$(CONFIG_TARGET_zynq)$(CONFIG_EFI_IMAGES) += mtools dosfstools
 tools-$(CONFIG_TARGET_ar71xx) += lzma-old squashfs
 tools-y += lzma squashfs4
 tools-$(BUILD_B43_TOOLS) += b43-tools
 tools-$(BUILD_PPL_CLOOG) += ppl cloog
+tools-$(BUILD_ISL) += isl
 tools-$(CONFIG_USE_SPARSE) += sparse
 
 # builddir dependencies
@@ -68,6 +73,7 @@ $(curdir)/sdcc/compile := $(curdir)/bison/install
 $(curdir)/b43-tools/compile := $(curdir)/bison/install
 $(curdir)/padjffs2/compile := $(curdir)/findutils/install
 $(curdir)/cloog/compile := $(curdir)/ppl/install
+$(curdir)/isl/compile := $(curdir)/gmp/install
 $(curdir)/bc/compile := $(curdir)/bison/install
 $(curdir)/findutils/compile := $(curdir)/bison/install
 $(curdir)/gengetopt/compile := $(curdir)/libtool/install
@@ -84,6 +90,9 @@ $(foreach tool, $(tools-y), $(if $(wildcard $(curdir)/$(tool)/patches),$(eval $(
 
 $(foreach tool, $(tools-y), $(eval $(curdir)/$(tool)/compile += $(curdir)/tar/install))
 tools-y += tar
+
+$(curdir)/tar/compile := $(curdir)/flock/install
+tools-y += flock
 
 $(curdir)/builddirs := $(tools-y) $(tools-dep) $(tools-)
 $(curdir)/builddirs-default := $(tools-y)

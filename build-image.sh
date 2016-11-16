@@ -1,18 +1,15 @@
 #!/usr/bin/env bash
 set -e
 
-#export OTB_BRANCH=`git rev-parse --abbrev-ref HEAD 2>/dev/null`
-export OTB_BRANCH="upstream-master"
-export OTB_TAG=`git describe --tags --match='v[0-9].*' 2>/dev/null`
+export OPENWRT_VERSION=`git ls-remote --tags https://github.com/openwrt/openwrt | awk -F/ '{ print $3 }' | sort -r | head -n1 2>/dev/null`
+export OTB_TAG=`git ls-remote --tags https://github.com/ovh/overthebox-feeds | awk -F/ '{ print $3 }' | sort -r | head -n1 2>/dev/null`
 export OTB_VERSION=${OTB_TAG#v}
 
-echo "Branch: $OTB_BRANCH"
-echo "TAG: $OTB_TAG"
-echo "OTB_VERSION: $OTB_VERSION"
-
+echo "Openwrt version: $OPENWRT_VERSION"
+echo "OverTheBox version: $OTB_VERSION"
 
 [ -d overthebox-openwrt ] || \
-    git clone --depth=1 https://github.com/ovh/overthebox-openwrt --branch ${OTB_BRANCH}
+	git clone --depth=1 https://github.com/openwrt/openwrt.git --tag ${OPENWRT_TAG} overthebox-openwrt
 
 rsync -avh otb/ overthebox-openwrt/
 
