@@ -26,7 +26,7 @@ sed -i "/^src-git overthebox/ s/$/^$OTB_COMMIT/" feeds.conf
 ./scripts/feeds update -a
 ./scripts/feeds install -a -f -p overthebox
 ./scripts/feeds install -a
-rsync -avh ../otb/feeds feeds
+rsync -avh ../otb/feeds/packages/ feeds/packages/
 
 make dirclean
 
