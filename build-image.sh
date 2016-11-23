@@ -3,9 +3,9 @@ set -e
 
 export OPENWRT_VERSION="3f98448d670ab2e908c8d6002d8c6f8ff5d1d9bd"
 # export OPENWRT_VERSION=`git ls-remote --tags https://github.com/openwrt/openwrt | awk -F/ '{ print $3 }' | sort -r | head -n1 2>/dev/null`
-export OTB_TAG=`git ls-remote --tags https://github.com/ovh/overthebox-feeds | rev | sort -r -V -t. | rev | grep -v "\^{}$" | head -n1 2>/dev/null`
-export OTB_VERSION=`echo "$OTB_TAG" | awk -F/ '{ print $3 }'`
-export OTB_COMMIT=`echo "$OTB_TAG" | cut -f1`
+export OTB_TAG=`git ls-remote --tags https://github.com/ovh/overthebox-feeds | grep -v "\^{}$" | awk '{print $2,$1}' | awk -F'/' '{print $3}' | sort -r -V -t. | head -n1 2>/dev/null`
+export OTB_VERSION=`echo "$OTB_TAG" | cut -f1 -d' '`
+export OTB_COMMIT=`echo "$OTB_TAG" | cut -f2 -d' '`
 
 echo "--- Openwrt version: $OPENWRT_VERSION	---"
 echo "--- OverTheBox version: $OTB_VERSION	---"
