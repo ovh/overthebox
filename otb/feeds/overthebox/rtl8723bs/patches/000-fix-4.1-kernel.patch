@@ -1,0 +1,26 @@
+diff --git a/include/rtw_wifi_regd.h b/include/rtw_wifi_regd.h
+index e715489..7183184 100644
+--- a/include/rtw_wifi_regd.h
++++ b/include/rtw_wifi_regd.h
+@@ -7,7 +7,7 @@
+ #ifndef __RTW_WIFI_REGD_H__
+ #define __RTW_WIFI_REGD_H__
+ 
+-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0))
+ #define ieee80211_band nl80211_band
+ #define IEEE80211_BAND_2GHZ NL80211_BAND_2GHZ
+ #define IEEE80211_BAND_5GHZ NL80211_BAND_5GHZ
+diff --git a/os_dep/ioctl_cfg80211.c b/os_dep/ioctl_cfg80211.c
+index 094d735..6bb4096 100644
+--- a/os_dep/ioctl_cfg80211.c
++++ b/os_dep/ioctl_cfg80211.c
+@@ -585,7 +585,7 @@ void rtw_cfg80211_indicate_disconnect(struct adapter *padapter)
+ 
+ 	if (!padapter->mlmepriv.not_indic_disco) {
+ 		if (check_fwstate(&padapter->mlmepriv, _FW_LINKED)) {
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 1, 0)
+ 			cfg80211_disconnected(padapter->pnetdev, 0,
+ 					      NULL, 0, true, GFP_ATOMIC);
+ #else
