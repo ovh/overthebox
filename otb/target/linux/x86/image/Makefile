@@ -117,6 +117,13 @@ ifneq ($(CONFIG_EFI_IMAGES),)
 	# Setup EFI Grub
 	echo "search --file /boot/grub/$(SIGNATURE).cfg --set=root" > $(KDIR)/grub2.efi/efi/boot/grub.cfg
 	echo "configfile /boot/grub/grub.cfg" >> $(KDIR)/grub2.efi/efi/boot/grub.cfg
+	# Create startup.nsh to always boot from usb first
+	echo 'set variable "fs1:\efi\boot\bootx64.efi"' > $(KDIR)/grub2.efi/startup.nsh
+	echo 'if exist %variable% then' >> $(KDIR)/grub2.efi/startup.nsh
+	echo '	fs1:\efi\boot\bootx64.efi' >> $(KDIR)/grub2.efi/startup.nsh
+	echo 'else' >> $(KDIR)/grub2.efi/startup.nsh
+	echo '	exit' >> $(KDIR)/grub2.efi/startup.nsh
+	echo 'endif' >> $(KDIR)/grub2.efi/startup.nsh
 	#
 	grub-mkimage \
 		-d $(STAGING_DIR_HOST)/lib/grub/x86_64-efi \
