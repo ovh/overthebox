@@ -65,3 +65,129 @@ define KernelPackage/sound-soc-intel-sst
 endef
 
 $(eval $(call KernelPackage,sound-soc-intel-sst))
+
+define KernelPackage/sound-soc-intel-hda
+  TITLE:=Intel HDA SoC support
+  DEPENDS:=@TARGET_x86_overthebox +sound-soc-intel-sst
+  KCONFIG:=\
+	CONFIG_SND_HDA_GENERIC \
+	CONFIG_SND_HDA_INTEL \
+	CONFIG_SND_HDA_CODEC_REALTEK \
+	CONFIG_SND_HDA_CODEC_HDMI
+  FILES:= \
+	$(LINUX_DIR)/sound/hda/snd-hda-core.ko \
+	$(LINUX_DIR)/sound/pci/hda/snd-hda-codec.ko \
+	$(LINUX_DIR)/sound/pci/hda/snd-hda-controller.ko \
+	$(LINUX_DIR)/sound/pci/hda/snd-hda-codec-generic.ko \
+	$(LINUX_DIR)/sound/pci/hda/snd-hda-codec-realtek.ko \
+	$(LINUX_DIR)/sound/pci/hda/snd-hda-codec-hdmi.ko \
+	$(LINUX_DIR)/sound/pci/hda/snd-hda-intel.ko
+  AUTOLOAD:=$(call AutoLoad,59,snd-hda-core snd-hda-codec snd-hda-controller snd-hda-codec-generic snd-hda-codec-realtek snd-hda-codec-hdmi snd-hda-intel)
+  $(call AddDepends/sound)
+endef
+
+
+define KernelPackage/sound-soc-intel-hda/config
+	menu "Configuration"
+		depends on PACKAGE_kmod-sound-soc-intel-hda
+
+	config KERNEL_SND_HDA_HWDEP
+		bool "SND_HDA_HWDEP"
+		default y
+		help
+		   CONFIG_SND_HDA_HWDEP
+
+	config KERNEL_SND_HDA_INPUT_BEEP
+		bool "SND_HDA_INPUT_BEEP"
+		default y
+		help
+		   SND_HDA_INPUT_BEEP
+
+	config KERNEL_SND_HDA_INPUT_BEEP_MODE
+		int "SND_HDA_INPUT_BEEP_MODE 0=off 1=on"
+		default 1
+		help
+		   CONFIG_SND_HDA_INPUT_BEEP_MODE
+
+	config KERNEL_SND_HDA_PREALLOC_SIZE
+		int "CONFIG_SND_HDA_PREALLOC_SIZE"
+		default 64
+		help
+		   CONFIG_EXT_CLK
+
+	config KERNEL_SND_HDA_CODEC_ANALOG
+		bool "SND_HDA_CODEC_ANALOG"
+		default n
+		help
+		  CONFIG_SND_HDA_CODEC_ANALOG
+
+	config KERNEL_SND_HDA_RECONFIG
+		bool "SND_HDA_RECONFIG"
+		default y
+		help
+		   CONFIG_SND_HDA_RECONFIG
+
+	config KERNEL_SND_HDA_INPUT_JACK
+                bool "SND_HDA_INPUT_JACK"
+                default y
+                help
+                   CONFIG_SND_HDA_INPUT_JACK
+
+	config KERNEL_SND_HDA_PATCH_LOADER
+                bool "SND_HDA_PATCH_LOADER"
+                default y
+                help
+                   CONFIG_SND_HDA_PATCH_LOADER
+
+	config KERNEL_SND_HDA_CODEC_SIGMATEL
+		bool "CONFIG_SND_HDA_CODEC_SIGMATEL"
+		default n
+		help
+		   CONFIG_SND_HDA_CODEC_SIGMATEL
+
+	config KERNEL_SND_HDA_CODEC_VIA
+                bool "CONFIG_SND_HDA_CODEC_VIA"
+                default n
+                help
+                   CONFIG_SND_HDA_CODEC_VIA
+
+	config KERNEL_SND_HDA_CODEC_CIRRUS
+                bool "CONFIG_SND_HDA_CODEC_CIRRUS"
+                default n
+                help
+                   CONFIG_SND_HDA_CODEC_CIRRUS
+
+	config KERNEL_SND_HDA_CODEC_CONEXANT
+                bool "CONFIG_SND_HDA_CODEC_CONEXANT"
+                default n
+                help
+                   CONFIG_SND_HDA_CODEC_CONEXANT
+
+	config KERNEL_SND_HDA_CODEC_CA0110
+                bool "CONFIG_SND_HDA_CODEC_CA0110"
+                default n
+                help
+                   CONFIG_SND_HDA_CODEC_CA0110
+
+        config KERNEL_SND_HDA_CODEC_CA0132
+                bool "CONFIG_SND_HDA_CODEC_CA0132"
+                default n
+                help
+                   CONFIG_SND_HDA_CODEC_CA0132
+
+	config KERNEL_SND_HDA_CODEC_CMEDIA
+                bool "CONFIG_SND_HDA_CODEC_CMEDIA"
+                default n
+                help
+                   CONFIG_SND_HDA_CODEC_CMEDIA
+
+	config KERNEL_SND_HDA_CODEC_SI3054
+                bool "CONFIG_SND_HDA_CODEC_SI3054"
+                default n
+                help
+                   CONFIG_SND_HDA_CODEC_SI3054
+
+	endmenu
+endef
+
+$(eval $(call KernelPackage,sound-soc-intel-hda))
