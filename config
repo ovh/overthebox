@@ -1000,3 +1000,4 @@ CONFIG_shadow-all=y
 # CONFIG_BUSYBOX_CONFIG_TRACEROUTE6 is not set
 # CONFIG_SSP_SUPPORT is not set
 # CONFIG_VERSION_FILENAMES is not set
+CONFIG_LOCALMIRROR="http://downloads.overthebox.ovh/build_cache"
