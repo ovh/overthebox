@@ -7906,10 +7906,10 @@ index 000000000000..5d761164eb85
 +MODULE_VERSION("0.1");
 diff --git a/net/mptcp/mptcp_ctrl.c b/net/mptcp/mptcp_ctrl.c
 new file mode 100644
-index 000000000000..73dc09cbb4e1
+index 000000000000..3758ee87d0c8
 --- /dev/null
 +++ b/net/mptcp/mptcp_ctrl.c
-@@ -0,0 +1,2692 @@
+@@ -0,0 +1,2694 @@
 +/*
 + *	MPTCP implementation - MPTCP-control
 + *
@@ -8646,6 +8646,8 @@ index 000000000000..73dc09cbb4e1
 +			meta_sk->sk_state_change(meta_sk);
 +			sk_wake_async(meta_sk, SOCK_WAKE_IO, POLL_OUT);
 +		}
++
++		tcp_sk(meta_sk)->lsndtime = tcp_time_stamp;
 +	}
 +
 +	if (sk->sk_state == TCP_ESTABLISHED) {
@@ -9682,9 +9684,9 @@ index 000000000000..73dc09cbb4e1
 +	}
 +	if (meta_sk->sk_state != TCP_CLOSE) {
 +		sk_mem_reclaim(meta_sk);
-+		if (tcp_too_many_orphans(meta_sk, 0)) {
++		if (tcp_check_oom(meta_sk, 0)) {
 +			if (net_ratelimit())
-+				pr_info("MPTCP: too many of orphaned sockets\n");
++				pr_info("MPTCP: out of memory: force closing socket\n");
 +			tcp_set_state(meta_sk, TCP_CLOSE);
 +			meta_tp->ops->send_active_reset(meta_sk, GFP_ATOMIC);
 +			NET_INC_STATS_BH(sock_net(meta_sk),
@@ -10573,7 +10575,7 @@ index 000000000000..73dc09cbb4e1
 +	if (mptcp_register_scheduler(&mptcp_sched_default))
 +		goto register_sched_failed;
 +
-+	pr_info("MPTCP: Stable release v0.91.2 - 8e6d10d6710f");
++	pr_info("MPTCP: Stable release v0.91.2 - 7dc057edb502");
 +
 +	mptcp_init_failed = false;
 +
@@ -12481,7 +12483,7 @@ index 000000000000..1e5b753fc7c0
 +MODULE_VERSION("0.88");
 diff --git a/net/mptcp/mptcp_input.c b/net/mptcp/mptcp_input.c
 new file mode 100644
-index 000000000000..1dfe3dab26a7
+index 000000000000..945a56c77639
 --- /dev/null
 +++ b/net/mptcp/mptcp_input.c
 @@ -0,0 +1,2504 @@
@@ -14869,6 +14871,7 @@ index 000000000000..1dfe3dab26a7
 +	return 0;
 +}
 +
++/* Similar to tcp_should_expand_sndbuf */
 +bool mptcp_should_expand_sndbuf(const struct sock *sk)
 +{
 +	const struct sock *sk_it;
@@ -14898,7 +14901,6 @@ index 000000000000..1dfe3dab26a7
 +	if (sk_memory_allocated(meta_sk) >= sk_prot_mem_limits(meta_sk, 0))
 +		return false;
 +
-+
 +	/* For MPTCP we look for a subsocket that could send data.
 +	 * If we found one, then we update the send-buffer.
 +	 */
@@ -14914,7 +14916,7 @@ index 000000000000..1dfe3dab26a7
 +		if (tp_it->mptcp->rcv_low_prio || tp_it->mptcp->low_prio)
 +			cnt_backups++;
 +
-+		if (tp_it->packets_out < tp_it->snd_cwnd) {
++		if (tcp_packets_in_flight(tp_it) < tp_it->snd_cwnd) {
 +			if (tp_it->mptcp->rcv_low_prio || tp_it->mptcp->low_prio) {
 +				backup_available = 1;
 +				continue;
@@ -16813,10 +16815,10 @@ index 000000000000..73298b25a716
 +MODULE_VERSION("0.1");
 diff --git a/net/mptcp/mptcp_output.c b/net/mptcp/mptcp_output.c
 new file mode 100644
-index 000000000000..8afd6e8514c0
+index 000000000000..5dd6b20b4298
 --- /dev/null
 +++ b/net/mptcp/mptcp_output.c
-@@ -0,0 +1,1787 @@
+@@ -0,0 +1,1791 @@
 +/*
 + *	MPTCP implementation - Sending side
 + *
@@ -17442,6 +17444,7 @@ index 000000000000..8afd6e8514c0
 +		tcp_event_new_data_sent(meta_sk, skb);
 +
 +		__tcp_push_pending_frames(subsk, mss, TCP_NAGLE_PUSH);
++		meta_tp->lsndtime = tcp_time_stamp;
 +
 +		return 0;
 +	} else {
@@ -17562,6 +17565,8 @@ index 000000000000..8afd6e8514c0
 +		 * always push on the subflow
 +		 */
 +		__tcp_push_pending_frames(subsk, mss_now, TCP_NAGLE_PUSH);
++		meta_tp->lsndtime = tcp_time_stamp;
++
 +		path_mask |= mptcp_pi_to_flag(subtp->mptcp->path_index);
 +		skb_mstamp_get(&skb->skb_mstamp);
 +
@@ -18283,6 +18288,7 @@ index 000000000000..8afd6e8514c0
 +		meta_tp->retrans_stamp = tcp_skb_timestamp(skb);
 +
 +	__tcp_push_pending_frames(subsk, mss_now, TCP_NAGLE_PUSH);
++	meta_tp->lsndtime = tcp_time_stamp;
 +
 +	return 0;
 +
