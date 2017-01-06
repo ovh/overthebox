@@ -19,15 +19,15 @@ More information is available here:
 
 ## Install from pre-compiled images
 
-Guide to install the image is available in french [here](https://www.ovhtelecom.fr/overthebox/guides.xml).  
-You can download all supported images [here](http://downloads.overthebox.ovh/trunk/x86/64/).
+Guide to install the image is available in french [here](https://www.ovhtelecom.fr/overthebox/guides.xml).
+You can download all supported images [here](http://downloads.overthebox.ovh/stable/x86/64/).
 
 
 ## Install from source
 
 ### Dependencies
 
-You need a classical build environnement like `build-essential` on debian and `git`.  
+You need a classical build environnement like `build-essential` on debian and `git`.
 Some feeds might not available over `git` but only via `subversion` or `mercurial`.
 
 ### Prepare
