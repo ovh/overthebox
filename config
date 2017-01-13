@@ -439,6 +439,7 @@ CONFIG_PACKAGE_iptables-mod-ipopt=y
 CONFIG_PACKAGE_iptables-mod-ipsec=y
 CONFIG_PACKAGE_iptables-mod-nat-extra=y
 CONFIG_PACKAGE_iptables-mod-tproxy=y
+CONFIG_PACKAGE_iptables-mod-trace=y
 CONFIG_PACKAGE_iptraf-ng=m
 CONFIG_PACKAGE_iputils-arping=y
 CONFIG_PACKAGE_iputils-ping=y
