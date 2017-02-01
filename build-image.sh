@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-export OPENWRT_VERSION="3f98448d670ab2e908c8d6002d8c6f8ff5d1d9bd"
+export OPENWRT_VERSION="908266d6210811b21000262e975d678e3d8ac289"
 # export OPENWRT_VERSION=`git ls-remote --tags https://github.com/openwrt/openwrt | awk -F/ '{ print $3 }' | sort -r | head -n1 2>/dev/null`
 export OTB_TAG=`git ls-remote --tags https://github.com/ovh/overthebox-feeds | grep -v "\^{}$" | awk '{print $2,$1}' | awk -F'/' '{print $3}' | sort -r -V -t. | head -n1 2>/dev/null`
 export OTB_VERSION=`echo "$OTB_TAG" | cut -f1 -d' '`
