@@ -15,7 +15,7 @@ MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 
 DEFAULT_PACKAGES += partx-utils
 
-KERNEL_PATCHVER:=4.1
+KERNEL_PATCHVER:=4.4
 
 KERNELNAME:=bzImage
 
