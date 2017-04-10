@@ -1,0 +1,28 @@
+#!/bin/sh
+
+uci -q batch <<EOF
+set firewall.mptcp=zone
+set firewall.mptcp.name='mptcp'
+set firewall.mptcp.input='ACCEPT'
+set firewall.mptcp.output='ACCEPT'
+set firewall.mptcp.forward='ACCEPT'
+set firewall.mptcp.masq='1'
+
+set firewall.wanlan=forwarding
+set firewall.wanlan.src='wan'
+set firewall.wanlan.dest='lan'
+
+set firewall.lanwan=forwarding
+set firewall.lanwan.src='lan'
+set firewall.lanwan.dest='wan'
+
+set firewall.lanmptcp=forwarding
+set firewall.lanmptcp.src='lan'
+set firewall.lanmptcp.dest='mptcp'
+
+set firewall.mptcplan=forwarding
+set firewall.mptcplan.src='mptcp'
+set firewall.mptcplan.dest='lan'
+
+commit firewall
+EOF

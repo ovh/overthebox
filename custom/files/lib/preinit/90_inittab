@@ -1,0 +1,8 @@
+#!/bin/sh
+
+do_inittab() {
+	pv=$(cat /sys/devices/virtual/dmi/id/product_version)
+	[ "$pv" = V2B ] && sed -i /ttyS0/d /etc/inittab
+}
+
+boot_hook_add preinit_main do_inittab
