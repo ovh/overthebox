@@ -1,25 +1,38 @@
 #!/usr/bin/env bash
 set -e
 
-export OTB_BRANCH=`git rev-parse --abbrev-ref HEAD 2>/dev/null`
-export OTB_TAG=`git describe --tags --match='v[0-9].*' 2>/dev/null`
-export OTB_VERSION=${OTB_TAG#v}
+export OPENWRT_VERSION="908266d6210811b21000262e975d678e3d8ac289"
+# export OPENWRT_VERSION=`git ls-remote --tags https://github.com/openwrt/openwrt | awk -F/ '{ print $3 }' | sort -r | head -n1 2>/dev/null`
+export OTB_TAG=`git ls-remote --tags https://github.com/ovh/overthebox-feeds | grep -v "\^{}$" | awk '{print $2,$1}' | awk -F'/' '{print $3}' | sort -r -V -t. | head -n1 2>/dev/null`
+export OTB_VERSION=`echo "$OTB_TAG" | cut -f1 -d' '`
+export OTB_COMMIT=`echo "$OTB_TAG" | cut -f2 -d' '`
 
-[ -d overthebox-openwrt ] || \
-    git clone --depth=1 https://github.com/ovh/overthebox-openwrt --branch ${OTB_BRANCH}
+echo "--- Openwrt version: $OPENWRT_VERSION	---"
+echo "--- OverTheBox version: $OTB_VERSION	---"
+echo "--- OverTheBox commit: $OTB_COMMIT	---"
+
+[ -d overthebox-openwrt ] || {
+	git clone https://github.com/openwrt/openwrt.git overthebox-openwrt
+	cd overthebox-openwrt
+	git checkout ${OPENWRT_VERSION}
+	cd ..
+#	git clone --depth=1 https://github.com/openwrt/openwrt.git --tag ${OPENWRT_TAG} overthebox-openwrt
+}
 
 rsync -avh otb/ overthebox-openwrt/
-
 cd overthebox-openwrt
+sed -i "/^src-git overthebox/ s/$/^$OTB_COMMIT/" feeds.conf
 
 ./scripts/feeds update -a
 ./scripts/feeds install -a -f -p overthebox
 ./scripts/feeds install -a
+rsync -avh ../otb/feeds/packages/ feeds/packages/
 
 make dirclean
 
 cp ../config .config
 make defconfig
+# make kernel_menuconfig CONFIG_TARGET=subtarget
 
 make -j$(nproc)
 
