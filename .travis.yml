@@ -6,6 +6,7 @@ addons:
   apt:
     packages:
     - libxml-parser-perl
+    - uuid-dev
 before_script:
 - wget https://plik.root.gg/clients/linux-amd64/plik && chmod +x ./plik
 - echo 'URL = "https://plik.root.gg"' > ~/.plikrc
