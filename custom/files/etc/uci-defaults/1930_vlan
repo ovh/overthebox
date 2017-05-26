@@ -1,6 +1,6 @@
 #!/bin/sh
 
-grep -sq vlan /etc/otb-version || exit 0
+grep -sq V2B /sys/devices/virtual/dmi/id/product_version || exit 0
 
 uci -q batch <<EOF
 set network.lan.ifname='eth0'
