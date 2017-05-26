@@ -1,6 +1,6 @@
 #!/bin/sh
 
-grep -sq sticky /etc/otb-version || exit 0
+uci -q get network.@switch[0] || exit 0
 
 uci -q batch <<EOF
 set network.lan.type='macvlan'
