@@ -30,6 +30,13 @@ You can download all supported images [here](http://downloads.overthebox.ovh/sta
 You need a classical build environnement like `build-essential` on debian and `git`.
 Some feeds might not available over `git` but only via `subversion` or `mercurial`.
 
+On debian you'll need to install the following:
+```shell
+$ sudo apt install build-essential git unzip ncurses-dev libz-dev \
+libssl-dev python uuid-dev subversion gettext libxml-parser-perl \
+libpopt-dev gawk curl rsync
+```
+
 ### Prepare
 
 ```shell
@@ -37,21 +44,13 @@ $ git clone https://github.com/ovh/overthebox.git
 $ cd overthebox
 ```
 
-or choose a specific branch, for old releases you may need to update submodules:
-
-```shell
-$ git clone https://github.com/ovh/overthebox.git --branch v0.4
-$ cd overthebox
-$ git submodule update --init --remote
-```
-
-
 ### Build
 
+To build an image based on the meta-package `METAPKG`:
 ```shell
-$ ./build-image.sh
+$ ./build-image.sh METAPKG
 ```
-Files are located in `overthebox-openwrt/bin/x86-glibc/` directory.
+When finished, files are located in the directory `source/bin`.
 
 
 ## Credits
@@ -59,5 +58,6 @@ Files are located in `overthebox-openwrt/bin/x86-glibc/` directory.
 Our solution is mainly based on:
 
 * [OpenWRT](https://openwrt.org)
+* [LEDE](https://lede-project.org)
 * [MultiPath TCP (MPTCP)](https://multipath-tcp.org)
 * [Shadowsocks](https://shadowsocks.org)

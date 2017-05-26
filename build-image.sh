@@ -1,30 +1,48 @@
-#!/usr/bin/env bash
+#!/bin/sh
+
 set -e
 
-export OTB_BRANCH=`git rev-parse --abbrev-ref HEAD 2>/dev/null`
-export OTB_TAG=`git describe --tags --match='v[0-9].*' 2>/dev/null`
-export OTB_VERSION=${OTB_TAG#v}
+if [ -z "$1" ]; then
+	echo "Usage: $0 METAPKG"
+	exit 1
+fi
 
-[ -d overthebox-openwrt ] || \
-    git clone --depth=1 https://github.com/ovh/overthebox-openwrt --branch ${OTB_BRANCH}
+OTB_DIST=$1
+OTB_REPO=${OTB_REPO:-http://$(curl -sS ipaddr.ovh):8000}
+OTB_SOURCE=https://github.com/ovh/overthebox-lede
+OTB_NUMBER=17.05.26
+OTB_VERSION=$(git rev-parse --short HEAD)
 
-rsync -avh otb/ overthebox-openwrt/
+shift 1
 
-cd overthebox-openwrt
+[ -d source ] || \
+	git clone --depth 1 "${OTB_SOURCE}" --branch "otb-${OTB_NUMBER}" source
+
+rsync -avh custom/ source/
+
+cat > source/feeds.conf <<EOF
+src-git packages https://git.lede-project.org/feed/packages.git;lede-17.01
+src-git luci https://github.com/openwrt/luci.git;for-15.05
+src-git overthebox https://github.com/ovh/overthebox-feeds.git
+#src-link overthebox $(pwd)/overthebox-feeds
+EOF
+
+cd source
+
+echo "${OTB_VERSION}" > version
 
 ./scripts/feeds update -a
-./scripts/feeds install -a -f -p overthebox
-./scripts/feeds install -a
+./scripts/feeds install -a -d m -f -p overthebox
 
-make dirclean
+cat >> .config <<EOF
+CONFIG_IMAGEOPT=y
+CONFIG_VERSIONOPT=y
+CONFIG_VERSION_DIST="${OTB_DIST}"
+CONFIG_VERSION_REPO="${OTB_REPO}"
+CONFIG_VERSION_NUMBER="${OTB_NUMBER}"
+CONFIG_PACKAGE_${OTB_DIST}=y
+EOF
 
-cp ../config .config
 make defconfig
-
-make -j$(nproc)
-
-./scripts/diffconfig.sh  > bin/x86-glibc/config
-cp -a bin/x86-glibc/packages/overthebox bin/x86-glibc/packages/ovh
-cp ./staging_dir/target-x86_64_glibc-2.21/root-x86/lib/upgrade/platform.sh bin/x86-glibc/
-
-[ -n "${RSYNC}" ] && rsync -a bin/x86-glibc/ ${RSYNC}/${OTB_TAG}
+make clean
+make "$@"

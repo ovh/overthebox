@@ -1,0 +1,25 @@
+#!/bin/sh
+
+grep -sq sticky /etc/otb-version || exit 0
+
+uci -q batch <<EOF
+set network.lan.type='macvlan'
+set network.lan.interface='eth0'
+
+set network.if0=interface
+set network.if0.multipath='off'
+set network.if0.ifname='if0'
+set network.if0.proto='dhcp'
+set network.if0.type='macvlan'
+set network.if0.interface='eth0'
+set network.if0.defaultroute='0'
+set network.if0.peerdns='0'
+set network.if0.delegate='0'
+
+add_list firewall.@zone[0].network='if0'
+
+commit network
+commit firewall
+EOF
+
+exit 0
