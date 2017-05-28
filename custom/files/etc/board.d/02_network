@@ -1,0 +1,39 @@
+#!/bin/sh
+
+. /lib/functions/system.sh
+. /lib/functions/uci-defaults.sh
+
+board_config_update
+
+board="$(cat /tmp/sysinfo/board_name)"
+
+case "$board" in
+*overthebox-v2b)
+	# vlan 1 doesn't work and port 16 is not used so use it for a null role
+	ucidef_add_switch "otbv2sw" "15t@eth0" "16:none" \
+		"1:lan" "2:lan" "3:lan" "4:lan" "5:lan" "6:lan" \
+		"7:lan" "8:lan" "9:lan" "10:lan" "11:lan" "12:lan" \
+		"17:lan" "18:lan" "13:wan13" "14:wan14"
+	;;
+*)
+	ucidef_set_interface_raw "lan" "eth0" "none"
+	ucidef_set_interface_macaddr "lan" "42:42:42:42:42:42"
+
+	ucidef_set_interface_raw "if0" "eth0" "dhcp"
+	ucidef_set_interface_macaddr "if0" "auto"
+	;;
+esac
+
+json_select_object "network"
+	# always create tun0, shouldn't be here
+	json_select_object "tun0"
+		json_add_string ifname "tun0"
+		json_add_string protocol "static"
+		json_add_string ipaddr "10.166.178.2"
+		json_add_string netmask "255.255.255.0"
+	json_select ..
+json_select ..
+
+board_config_flush
+
+exit 0

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# On V2B ttyS0 is used for the switch
+
 do_inittab() {
 	pv=$(cat /sys/devices/virtual/dmi/id/product_version)
 	[ "$pv" = V2B ] && sed -i /ttyS0/d /etc/inittab
