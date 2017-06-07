@@ -10,7 +10,7 @@ fi
 OTB_DIST=$1
 OTB_REPO=${OTB_REPO:-http://$(curl -sS ipaddr.ovh):8000}
 OTB_SOURCE=https://github.com/ovh/overthebox-lede
-OTB_NUMBER=17.05.26
+OTB_NUMBER=17.06.07
 OTB_VERSION=$(git rev-parse --short HEAD)
 
 shift 1
@@ -24,7 +24,6 @@ cat > source/feeds.conf <<EOF
 src-git packages https://git.lede-project.org/feed/packages.git;lede-17.01
 src-git luci https://github.com/openwrt/luci.git;for-15.05
 src-git overthebox https://github.com/ovh/overthebox-feeds.git
-#src-link overthebox $(pwd)/overthebox-feeds
 EOF
 
 cd source
