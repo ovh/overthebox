@@ -14,30 +14,32 @@ OTB_NUMBER=17.06.09
 OTB_VERSION=$(git rev-parse --short HEAD)
 
 [ -d source ] || \
-	git clone --depth 1 "${OTB_SOURCE}" --branch "otb-${OTB_NUMBER}" source
+	git clone --depth 1 "$OTB_SOURCE" --branch "otb-$OTB_NUMBER" source
 
 rsync -avh custom/ source/
 
-cat > source/feeds.conf <<EOF
+cd source
+
+cat > feeds.conf <<EOF
 src-git packages https://git.lede-project.org/feed/packages.git;lede-17.01
 src-git luci https://github.com/openwrt/luci.git;for-15.05
 src-git overthebox https://github.com/ovh/overthebox-feeds.git
 EOF
 
-cd source
+scripts/feeds update -a
+scripts/feeds install -a -d m -f -p overthebox
 
-echo "${OTB_VERSION}" > version
+OTB_FEEDS_VERSION=$(git -C feeds/overthebox rev-parse --short HEAD)
 
-./scripts/feeds update -a
-./scripts/feeds install -a -d m -f -p overthebox
+echo "$OTB_VERSION-$OTB_FEEDS_VERSION" > version
 
 cat >> .config <<EOF
 CONFIG_IMAGEOPT=y
 CONFIG_VERSIONOPT=y
-CONFIG_VERSION_DIST="${OTB_DIST}"
-CONFIG_VERSION_REPO="${OTB_REPO}"
-CONFIG_VERSION_NUMBER="${OTB_NUMBER}"
-CONFIG_PACKAGE_${OTB_DIST}=y
+CONFIG_VERSION_DIST="$OTB_DIST"
+CONFIG_VERSION_REPO="$OTB_REPO"
+CONFIG_VERSION_NUMBER="$OTB_NUMBER"
+CONFIG_PACKAGE_$OTB_DIST=y
 EOF
 
 make defconfig
