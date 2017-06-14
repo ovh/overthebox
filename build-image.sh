@@ -2,18 +2,16 @@
 
 set -e
 
-if [ -z "$1" ]; then
-	echo "Usage: $0 METAPKG"
-	exit 1
+OTB_DIST=otb
+if [ -n "$1" ] && [ -n "${1%%-*}" ]; then
+    OTB_DIST=$1
+    shift 1
 fi
 
-OTB_DIST=$1
 OTB_REPO=${OTB_REPO:-http://$(curl -sS ipaddr.ovh):8000}
 OTB_SOURCE=https://github.com/ovh/overthebox-lede
 OTB_NUMBER=17.06.07
 OTB_VERSION=$(git rev-parse --short HEAD)
-
-shift 1
 
 [ -d source ] || \
 	git clone --depth 1 "${OTB_SOURCE}" --branch "otb-${OTB_NUMBER}" source
