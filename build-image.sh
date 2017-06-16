@@ -2,13 +2,6 @@
 
 set -e
 
-OTB_DIST=otb
-if [ -n "$1" ] && [ -n "${1%%-*}" ]; then
-    OTB_DIST=$1
-    shift 1
-fi
-
-OTB_REPO=${OTB_REPO:-http://$(curl -sS ipaddr.ovh):8000}
 OTB_SOURCE=https://github.com/ovh/overthebox-lede
 OTB_NUMBER=17.06.09
 OTB_VERSION=$(git rev-parse --short HEAD)
@@ -20,16 +13,17 @@ rsync -avh custom/ source/
 
 cd source
 
-cat > feeds.conf <<EOF
-src-git packages https://git.lede-project.org/feed/packages.git;lede-17.01
-src-git luci https://github.com/openwrt/luci.git;for-15.05
-src-git overthebox https://github.com/ovh/overthebox-feeds.git
-EOF
-
 scripts/feeds update -a
 scripts/feeds install -a -d m -f -p overthebox
 
 OTB_FEEDS_VERSION=$(git -C feeds/overthebox rev-parse --short HEAD)
+OTB_REPO=${OTB_REPO:-http://$(curl -sS ipaddr.ovh):8000}
+OTB_DIST=${OTB_DIST:-otb}
+
+if [ -n "$1" ] && [ -d "feeds/overthebox/$1" ]; then
+    OTB_DIST=$1
+    shift 1
+fi
 
 echo "$OTB_VERSION-$OTB_FEEDS_VERSION" > version
 
