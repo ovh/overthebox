@@ -3,7 +3,7 @@
 set -e
 
 OTB_SOURCE=https://github.com/ovh/overthebox-lede
-OTB_NUMBER=17.06.09
+OTB_NUMBER=17.06.18
 OTB_VERSION=$(git rev-parse --short HEAD)
 
 [ -d source ] || \
