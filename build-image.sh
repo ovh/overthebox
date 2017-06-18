@@ -13,8 +13,10 @@ rsync -avh custom/ source/
 
 cd source
 
+cp .config .config.keep
 scripts/feeds update -a
-scripts/feeds install -a -d m -f -p overthebox
+scripts/feeds install -a -d y -f -p overthebox
+cp .config.keep .config
 
 OTB_FEEDS_VERSION=$(git -C feeds/overthebox rev-parse --short HEAD)
 OTB_REPO=${OTB_REPO:-http://$(curl -sS ipaddr.ovh):8000}
