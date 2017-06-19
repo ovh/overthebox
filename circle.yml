@@ -1,0 +1,24 @@
+machine:
+    timezone: Europe/Paris
+    environment:
+        OTB_REPO: http://213.32.73.166:8000/overthebox
+
+dependencies:
+    override:
+        - sudo apt-get update
+        - sudo apt-get install build-essential git unzip ncurses-dev libz-dev libssl-dev python uuid-dev subversion gettext libxml-parser-perl libpopt-dev gawk curl rsync
+
+compile:
+    override:
+        - sh build-image.sh -j2 :
+            timeout: 7200
+
+test:
+    override:
+        - "true"
+
+deployment:
+    dev:
+        branch: master
+        commands:
+            - rsync -avh source/bin/ deploy@213.32.73.166:dist/overthebox/
