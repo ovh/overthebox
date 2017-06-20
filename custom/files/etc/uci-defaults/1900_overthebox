@@ -25,12 +25,11 @@ _setup() {
 		add_list firewall.wan.network=$1
 		EOF
 		;;
-	if*)
-		;;
 	*)
-		uci -q batch <<-EOF
-		set network.$1.multipath=off
-		EOF
+		uci -q get "network.$1.multipath" > /dev/null || \
+			uci -q batch <<-EOF
+			set network.$1.multipath=off
+			EOF
 		;;
 	esac
 }
