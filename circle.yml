@@ -1,12 +1,19 @@
 machine:
     timezone: Europe/Paris
     environment:
-        OTB_REPO: http://213.32.73.166:8000/overthebox
+        OTB_PATH: user/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH
+        OTB_REPO: http://213.32.73.166:8000/$OTB_PATH
 
 dependencies:
     override:
         - sudo apt-get update
         - sudo apt-get install build-essential git unzip ncurses-dev libz-dev libssl-dev python uuid-dev subversion gettext libxml-parser-perl libpopt-dev gawk curl rsync
+        - sh build.sh prepare -j3 && cd source &&  make package/compile -j3 :
+            timeout: 7200
+        - rm -rf source/files
+    cache_directories:
+        - "source"
+        - "feed"
 
 compile:
     override:
@@ -19,6 +26,7 @@ test:
 
 deployment:
     dev:
-        branch: master
+        branch: /.*/
         commands:
-            - rsync -avh source/bin/ deploy@213.32.73.166:dist/overthebox/
+            - ssh deploy@213.32.73.166 mkdir -p dist/$OTB_PATH
+            - rsync -avh source/bin/ deploy@213.32.73.166:dist/$OTB_PATH
