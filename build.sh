@@ -40,6 +40,4 @@ EOF
 
 make defconfig
 make clean
-make "$@" || exit
-
-find bin -name '*.img*' -exec ./staging_dir/host/bin/usign -S -m {} -s key-build \;
+make "$@"
