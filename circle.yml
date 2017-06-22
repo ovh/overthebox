@@ -10,7 +10,7 @@ dependencies:
 
 compile:
     override:
-        - sh build-image.sh -j2 :
+        - sh build.sh -j2 :
             timeout: 7200
 
 test:

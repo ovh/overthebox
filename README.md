@@ -47,7 +47,7 @@ $ cd overthebox
 ### Build
 
 ```shell
-$ ./build-image.sh
+$ ./build.sh
 ```
 
 You can also specify the image you want to build (eg: otb / otb-debug).
@@ -57,7 +57,7 @@ The default build will use `otb`.
 You can optionally add arguments to the build.
 
 ```shell
-$ ./build-image.sh otb-debug -j8
+$ ./build.sh otb-debug -j8
 ```
 
 When finished, files are located in the directory `source/bin`.
