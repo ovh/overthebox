@@ -28,6 +28,7 @@ if [ -n "$1" ] && [ -d "$feed/$1" ]; then
 	shift 1
 fi
 
+rm -rf source/files
 rsync -avh custom/ source/
 
 cat > source/feeds.conf <<EOF
