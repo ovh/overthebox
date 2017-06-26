@@ -4,7 +4,7 @@ OverTheBox is an open source solution developed by OVH to aggregate and encrypt 
 
 The aggregation is based on MPTCP, which is ISP, WAN type, and latency independent "whether it was Fiber, VDSL, SHDSL, ADSL or even 4G", different scenarios can be configured to have either aggregation, load-balancing or failover based on MPTCP or even OpenWRT mwan3 package.
 
-The solution takes advantage of the OpenWRT system, which is user friendly and also the possibility of installing other packages like VPN, QoS, routing protocols, monitoring, etc. through web-interface or terminal.
+The solution takes advantage of the OpenWRT/LEDE system, which is user friendly and also the possibility of installing other packages like VPN, QoS, routing protocols, monitoring, etc. through web-interface or terminal.
 
 
 More information is available here:
@@ -32,9 +32,8 @@ Some feeds might not available over `git` but only via `subversion` or `mercuria
 
 On debian you'll need to install the following:
 ```shell
-$ sudo apt install build-essential git unzip ncurses-dev libz-dev \
-libssl-dev python uuid-dev subversion gettext libxml-parser-perl \
-libpopt-dev gawk curl rsync
+$ sudo apt install build-essential git unzip ncurses-dev libz-dev libssl-dev \
+  python subversion gettext gawk wget curl rsync perl
 ```
 
 ### Prepare
