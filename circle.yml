@@ -2,21 +2,20 @@ machine:
     timezone: Europe/Paris
     environment:
         OTB_PATH: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/$CIRCLE_BRANCH
-        OTB_REPO: http://$OTB_HOST:$OTB_PORT/$OTB_PATH
 
 dependencies:
     override:
         - sudo apt-get update
-        - sudo apt-get install build-essential git unzip ncurses-dev libz-dev libssl-dev python uuid-dev subversion gettext libxml-parser-perl libpopt-dev gawk curl rsync
+        - sudo apt-get install -yq build-essential git unzip ncurses-dev libz-dev libssl-dev python subversion gettext gawk wget curl rsync perl
         - sh build.sh prepare package/{compile,install,index} -j2 :
             timeout: 7200
     cache_directories:
         - "source"
-        - "feed"
+        - "feeds"
 
 compile:
     override:
-        - make -C source target/install :
+        - make -C source target/install -j2 :
             timeout: 7200
 
 test:
