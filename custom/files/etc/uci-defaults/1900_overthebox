@@ -16,9 +16,6 @@ _setup() {
 		add_list firewall.mptcp.network=$1
 		EOF
 		;;
-	none) # hack (see /etc/board.d/02_network)
-		uci -q delete "network.$1"
-		;;
 	*tun*)
 		uci -q batch <<-EOF
 		set network.$1.multipath=off
