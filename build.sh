@@ -2,58 +2,64 @@
 
 set -e
 
-OTB_NUMBER=$(git describe --tag --always)
+_get_repo() {
+	git clone "$2" "$1" 2>/dev/null || true
+	git -C "$1" remote set-url origin "$2"
+	git -C "$1" fetch --all
+	git -C "$1" checkout "origin/$3" -B "$3"
+}
 
-OTB_SRC=${OTB_SRC:-17.06.18}
-OTB_REPO=${OTB_REPO:-http://$(curl -sS ipaddr.ovh):8000}
 OTB_DIST=${OTB_DIST:-otb}
+OTB_HOST=${OTB_HOST:-$(curl -sS ipaddr.ovh)}
+OTB_PORT=${OTB_PORT:-8000}
+OTB_REPO=${OTB_REPO:-http://$OTB_HOST:$OTB_PORT/$OTB_PATH}
 
-git clone https://github.com/ovh/overthebox-lede source || true
-git -C source fetch --all
-git -C source checkout "origin/otb-$OTB_SRC" -B "otb-$OTB_SRC"
-
-feed=${OTB_FEED:-feed}
+_get_repo source https://github.com/ovh/overthebox-lede "otb-17.06.25"
+_get_repo feeds/packages https://github.com/openwrt/packages "lede-17.01"
+_get_repo feeds/luci https://github.com/openwrt/luci "for-15.05"
 
 if [ -z "$OTB_FEED" ]; then
-	OTB_FEED_SRC=${OTB_FEED_SRC:-master}
-	git clone https://github.com/ovh/overthebox-feeds "$feed" || true
-	git -C "$feed" fetch --all
-	git -C "$feed" checkout "origin/$OTB_FEED_SRC" -B "$OTB_FEED_SRC"
+	OTB_FEED=feeds/overthebox
+	_get_repo "$OTB_FEED" https://github.com/ovh/overthebox-feeds "${OTB_FEED_SRC:-master}"
 fi
 
-echo "$OTB_SRC-$(git -C "$feed" describe --tag --always)" > source/version
-
-if [ -n "$1" ] && [ -d "$feed/$1" ]; then
+if [ -n "$1" ] && [ -f "$OTB_FEED/$1/Makefile" ]; then
 	OTB_DIST=$1
 	shift 1
 fi
 
 rm -rf source/files
-rsync -avh custom/ source/
+ln -s root source/files
 
 cat > source/feeds.conf <<EOF
-src-git packages https://git.lede-project.org/feed/packages.git;lede-17.01
-src-git luci https://github.com/openwrt/luci.git;for-15.05
-src-link overthebox $(readlink -f "$feed")
+src-link packages $(readlink -f feeds/packages)
+src-link luci $(readlink -f feeds/luci)
+src-link overthebox $(readlink -f "$OTB_FEED")
 EOF
 
-cat >> source/.config <<EOF
+cat config -> source/.config <<EOF
 CONFIG_IMAGEOPT=y
 CONFIG_VERSIONOPT=y
 CONFIG_VERSION_DIST="$OTB_DIST"
 CONFIG_VERSION_REPO="$OTB_REPO"
-CONFIG_VERSION_NUMBER="$OTB_NUMBER"
+CONFIG_VERSION_NUMBER="$(git describe --tag --always)"
+CONFIG_VERSION_CODE="$(git -C "$OTB_FEED" describe --tag --always)"
 CONFIG_PACKAGE_$OTB_DIST=y
 EOF
 
+echo "Building $OTB_CODE"
+
 cd source
 
-echo "Building $(cat version)"
-
 cp .config .config.keep
+scripts/feeds clean
 scripts/feeds update -a
 scripts/feeds install -a -d y -f -p overthebox
 cp .config.keep .config
 
 make defconfig
-make "$@"
+
+make "$@" || {
+	make clean
+	make "$@"
+}
