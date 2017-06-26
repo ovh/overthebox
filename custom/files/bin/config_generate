@@ -67,6 +67,9 @@ generate_network() {
 
 	[ -n "$ifname" ] || return
 
+	# hack (see /etc/board.d/02_network)
+	[ "$ifname" = none ] && return
+
 	if [ -n "$macaddr" ]; then
 		type=macvlan # useless, only for legacy
 		uci -q batch <<-EOF
