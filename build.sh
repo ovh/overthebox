@@ -29,7 +29,7 @@ if [ -n "$1" ] && [ -f "$OTB_FEED/$1/Makefile" ]; then
 fi
 
 rm -rf source/files
-ln -s root source/files
+cp -rf root source/files
 
 cat > source/feeds.conf <<EOF
 src-link packages $(readlink -f feeds/packages)
