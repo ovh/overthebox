@@ -2,6 +2,8 @@
 
 set -e
 
+unset GREP_OPTIONS SED
+
 _get_repo() {
 	git clone "$2" "$1" 2>/dev/null || true
 	git -C "$1" remote set-url origin "$2"
@@ -14,7 +16,7 @@ OTB_HOST=${OTB_HOST:-$(curl -sS ipaddr.ovh)}
 OTB_PORT=${OTB_PORT:-8000}
 OTB_REPO=${OTB_REPO:-http://$OTB_HOST:$OTB_PORT/$OTB_PATH}
 
-_get_repo source https://github.com/ovh/overthebox-lede "otb-17.06.25"
+_get_repo source https://github.com/ovh/overthebox-lede "otb-17.06.28"
 _get_repo feeds/packages https://github.com/openwrt/packages "lede-17.01"
 _get_repo feeds/luci https://github.com/openwrt/luci "for-15.05"
 
