@@ -31,6 +31,16 @@ fi
 rm -rf source/files
 cp -rf root source/files
 
+cat >> source/files/etc/banner <<EOF
+-----------------------------------------------------
+ PACKAGE:     $OTB_DIST
+ VERSION:     $(git describe --tag --always)
+
+ BUILD REPO:  $(git remote get-url origin)
+ BUILD DATE:  $(date -u)
+-----------------------------------------------------
+EOF
+
 cat > source/feeds.conf <<EOF
 src-link packages $(readlink -f feeds/packages)
 src-link luci $(readlink -f feeds/luci)
