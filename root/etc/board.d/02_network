@@ -5,7 +5,7 @@
 
 board_config_update
 
-board="$(cat /tmp/sysinfo/board_name)"
+board="$(cat /tmp/sysinfo/board_name)" 2>/dev/null
 
 case "$board" in
 *overthebox-v2b)
@@ -16,23 +16,13 @@ case "$board" in
 		"17:lan" "18:lan" "13:wan13" "14:wan14"
 	;;
 *)
-	ucidef_set_interface_raw "lan" "eth0" "none"
-	ucidef_set_interface_macaddr "lan" "42:42:42:42:42:42"
+	ucidef_set_interface_raw "lan" "eth0" "static"
+	ucidef_set_interface_macaddr "lan" "auto"
 
 	ucidef_set_interface_raw "if0" "eth0" "dhcp"
 	ucidef_set_interface_macaddr "if0" "auto"
 	;;
 esac
-
-json_select_object "network"
-	# always create tun0, shouldn't be here
-	json_select_object "tun0"
-		json_add_string ifname "tun0"
-		json_add_string protocol "static"
-		json_add_string ipaddr "10.166.178.2"
-		json_add_string netmask "255.255.255.0"
-	json_select ..
-json_select ..
 
 board_config_flush
 
