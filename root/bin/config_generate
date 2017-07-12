@@ -67,8 +67,12 @@ generate_network() {
 
 	[ -n "$ifname" ] || return
 
-	# hack (see /etc/board.d/02_network)
-	[ "$ifname" = none ] && return
+	case "$1" in
+		# hack (see /etc/board.d/02_network)
+		none) return ;;
+		lan*) proto=${proto:-static} ;;
+		wan*) proto=${proto:-dhcp} ;;
+	esac
 
 	if [ -n "$macaddr" ]; then
 		type=macvlan # useless, only for legacy
