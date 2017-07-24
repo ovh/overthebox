@@ -25,8 +25,6 @@ test:
 deployment:
     dev:
         branch: /.*/
-        commands: |
-            [ -n "$OTB_KEY" ] \
-               && ssh deploy@$OTB_HOST mkdir -p deploy/$OTB_PATH \
-               && rsync -av --delete-after source/bin/ deploy@$OTB_HOST:deploy/$OTB_PATH \
-               || true
+        commands:
+            - ssh deploy@$OTB_HOST mkdir -p deploy/$OTB_PATH
+            - rsync -av --delete-after source/bin/ deploy@$OTB_HOST:deploy/$OTB_PATH
