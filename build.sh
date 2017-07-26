@@ -30,7 +30,7 @@ if [ -n "$1" ] && [ -f "$OTB_FEED/$1/Makefile" ]; then
 	shift 1
 fi
 
-rm -rf source/files
+rm -rf source/bin source/files source/tmp
 cp -rf root source/files
 
 cat >> source/files/etc/banner <<EOF
