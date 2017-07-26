@@ -16,7 +16,7 @@ OTB_HOST=${OTB_HOST:-$(curl -sS ipaddr.ovh)}
 OTB_PORT=${OTB_PORT:-8000}
 OTB_REPO=${OTB_REPO:-http://$OTB_HOST:$OTB_PORT/$OTB_PATH}
 
-_get_repo source https://github.com/ovh/overthebox-lede "otb-17.07.11"
+_get_repo source https://github.com/ovh/overthebox-lede "otb-17.07.25"
 _get_repo feeds/packages https://github.com/openwrt/packages "lede-17.01"
 _get_repo feeds/luci https://github.com/openwrt/luci "for-15.05"
 
@@ -30,7 +30,7 @@ if [ -n "$1" ] && [ -f "$OTB_FEED/$1/Makefile" ]; then
 	shift 1
 fi
 
-rm -rf source/files
+rm -rf source/bin source/files source/tmp
 cp -rf root source/files
 
 cat >> source/files/etc/banner <<EOF
