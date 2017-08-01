@@ -16,7 +16,7 @@ OTB_HOST=${OTB_HOST:-$(curl -sS ipaddr.ovh)}
 OTB_PORT=${OTB_PORT:-8000}
 OTB_REPO=${OTB_REPO:-http://$OTB_HOST:$OTB_PORT/$OTB_PATH}
 
-_get_repo source https://github.com/ovh/overthebox-lede "otb-17.07.26"
+_get_repo source https://github.com/ovh/overthebox-lede "otb-17.08.01"
 _get_repo feeds/packages https://github.com/openwrt/packages "lede-17.01"
 _get_repo feeds/luci https://github.com/openwrt/luci "for-15.05"
 
