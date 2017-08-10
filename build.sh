@@ -38,7 +38,7 @@ cat >> source/files/etc/banner <<EOF
  PACKAGE:     $OTB_DIST
  VERSION:     $(git describe --tag --always)
 
- BUILD REPO:  $(git remote get-url origin)
+ BUILD REPO:  $(git config --get remote.origin.url)
  BUILD DATE:  $(date -u)
 -----------------------------------------------------
 EOF
