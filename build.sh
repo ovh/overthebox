@@ -57,6 +57,7 @@ CONFIG_VERSION_REPO="$OTB_REPO"
 CONFIG_VERSION_NUMBER="$(git describe --tag --always)"
 CONFIG_VERSION_CODE="$(git -C "$OTB_FEED" describe --tag --always)"
 CONFIG_PACKAGE_$OTB_DIST=y
+CONFIG_PACKAGE_${OTB_DIST}-full=m
 EOF
 
 echo "Building $OTB_CODE"
