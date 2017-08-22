@@ -15,6 +15,13 @@ OTB_DIST=${OTB_DIST:-otb}
 OTB_HOST=${OTB_HOST:-$(curl -sS ipaddr.ovh)}
 OTB_PORT=${OTB_PORT:-8000}
 OTB_REPO=${OTB_REPO:-http://$OTB_HOST:$OTB_PORT/$OTB_PATH}
+OTB_TARGET=${OTB_TARGET:-x86_64}
+OTB_TARGET_CONFIG="config-$OTB_TARGET"
+
+if [ ! -f "$OTB_TARGET_CONFIG" ]; then
+	echo "Target $OTB_TARGET not found !"
+	exit 1
+fi
 
 _get_repo source https://github.com/ovh/overthebox-lede "otb-17.08.03"
 _get_repo feeds/packages https://github.com/openwrt/packages "lede-17.01"
@@ -49,7 +56,7 @@ src-link luci $(readlink -f feeds/luci)
 src-link overthebox $(readlink -f "$OTB_FEED")
 EOF
 
-cat config -> source/.config <<EOF
+cat "$OTB_TARGET_CONFIG" config -> source/.config <<EOF
 CONFIG_IMAGEOPT=y
 CONFIG_VERSIONOPT=y
 CONFIG_VERSION_DIST="$OTB_DIST"
@@ -60,7 +67,7 @@ CONFIG_PACKAGE_$OTB_DIST=y
 CONFIG_PACKAGE_${OTB_DIST}-full=m
 EOF
 
-echo "Building $OTB_CODE"
+echo "Building $OTB_CODE for the target $OTB_TARGET"
 
 cd source
 
