@@ -1,0 +1,39 @@
+#!/bin/sh
+# shellcheck disable=SC1090,SC1091
+
+TARGET=mmcblk0
+
+if read -r CMD < /proc/cmdline; then
+	case "$CMD" in
+		*recovery=*)
+			TARGET="${CMD##*recovery=}"
+			TARGET="${TARGET%% *}"
+			;;
+	esac
+fi
+
+[ -b /dev/"$TARGET" ] || return
+
+# get DEVNAME
+. /lib/upgrade/common.sh
+export_bootdevice
+. /sys/dev/block/"$BOOTDEV_MAJOR:$BOOTDEV_MINOR"/uevent
+
+[ "$DEVNAME" = "$TARGET" ] && return
+
+COUNT=0
+for part in /sys/dev/block/"$BOOTDEV_MAJOR:$BOOTDEV_MINOR/$DEVNAME"*; do
+	START=$(cat "$part"/start)
+	SIZE=$(cat "$part"/size)
+	NEWCOUNT=$((START+SIZE))
+	[ "$NEWCOUNT" -gt "$COUNT" ] && COUNT=$NEWCOUNT
+done
+[ "$COUNT" = 0 ] && return
+
+echo "RECOVERY: from $DEVNAME to $TARGET ($COUNT blocks)"
+dd if=/dev/"$DEVNAME" of=/dev/"$TARGET" bs=512 count="$COUNT" || return
+sync
+
+echo "RECOVERY: done! rebooting..."
+sleep 2
+reboot -f
