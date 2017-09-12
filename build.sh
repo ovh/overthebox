@@ -7,7 +7,8 @@ unset GREP_OPTIONS SED
 _get_repo() {
 	git clone "$2" "$1" 2>/dev/null || true
 	git -C "$1" remote set-url origin "$2"
-	git -C "$1" fetch --all
+	git -C "$1" fetch origin
+	git -C "$1" fetch origin --tags
 	git -C "$1" checkout "origin/$3" -B "$3"
 }
 
@@ -67,7 +68,7 @@ CONFIG_PACKAGE_$OTB_DIST=y
 CONFIG_PACKAGE_${OTB_DIST}-full=m
 EOF
 
-echo "Building $OTB_CODE for the target $OTB_TARGET"
+echo "Building $OTB_DIST for the target $OTB_TARGET"
 
 cd source
 
@@ -78,8 +79,4 @@ scripts/feeds install -a -d y -f -p overthebox
 cp .config.keep .config
 
 make defconfig
-
-make "$@" || {
-	make clean
-	make "$@"
-}
+make "$@"
