@@ -5,6 +5,9 @@ TARGET=mmcblk0
 
 if read -r CMD < /proc/cmdline; then
 	case "$CMD" in
+		*rootfstype=ubifs*)
+			return
+			;;
 		*recovery=*)
 			TARGET="${CMD##*recovery=}"
 			TARGET="${TARGET%% *}"
