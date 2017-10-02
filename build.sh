@@ -2,6 +2,7 @@
 
 set -e
 
+umask 0022
 unset GREP_OPTIONS SED
 
 _get_repo() {
