@@ -1,0 +1,63 @@
+#!/bin/sh
+# shellcheck disable=SC1090
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+count=0
+
+_get_uuid() {
+	dd if="$1" bs=1 skip=440 count=4 2>/dev/null | hexdump -v -e '4/1 "%02x "'
+}
+
+read -r cmdline < /proc/cmdline || exit
+
+case "$cmdline" in
+	*block2mtd=*)
+		disk="${cmdline##*block2mtd=}"
+		disk="${disk%%,*}"
+		;;
+	*root=*)
+		disk="${cmdline##*root=}"
+		disk="${disk%% *}"
+		;;
+	*)
+		exit 0
+		;;
+esac
+
+case "$disk" in
+	PARTUUID=[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9]-02)
+		uuid="${disk#PARTUUID=}"
+		uuid="${uuid%-02}"
+		for block in /sys/class/block/*; do
+			[ -f "$block"/uevent ] || continue
+			. "$block"/uevent
+			[ "$DEVTYPE" = disk ] || continue
+			# shellcheck disable=SC2046
+			set -- $(_get_uuid /dev/"$DEVNAME")
+			[ "$4$3$2$1" = "$uuid" ] || continue
+			dev=/dev/"$DEVNAME"
+			count=$((count+1))
+		done
+		;;
+esac
+
+[ "$count" = 1 ] || exit
+
+_mount() {
+	mount -t vfat "$1" /mnt
+}
+
+_mount "$dev"p1 || _mount "$dev"1 || exit
+
+logger -t "$0" "Update MBR"
+dd if=/dev/urandom of="$dev" bs=1 count=4 seek=440 conv=notrunc || exit
+sync
+
+# shellcheck disable=SC2046
+set -- $(_get_uuid "$dev")
+
+logger -t "$0" "Update files ($uuid -> $4$3$2$1)"
+sed -i "s/$uuid/$4$3$2$1/p" /mnt/efi/boot/boot.nsh /mnt/boot/grub/grub.cfg
+
+umount /mnt
+logger -t "$0" "Done"
