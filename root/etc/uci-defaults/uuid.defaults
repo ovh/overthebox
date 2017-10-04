@@ -57,7 +57,7 @@ sync
 set -- $(_get_uuid "$dev")
 
 logger -t "$0" "Update files ($uuid -> $4$3$2$1)"
-sed -i "s/$uuid/$4$3$2$1/p" /mnt/efi/boot/boot.nsh /mnt/boot/grub/grub.cfg
+sed -i "s/$uuid/$4$3$2$1/" /mnt/efi/boot/boot.nsh /mnt/boot/grub/grub.cfg
 
 umount /mnt
 logger -t "$0" "Done"
