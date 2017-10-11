@@ -13,7 +13,7 @@ More information is available here:
 
 ## Install from pre-compiled images
 
-Guide to install the image is available in french [here](https://www.ovhtelecom.fr/overthebox/guides.xml).
+Guide to install the image is available in french [here](https://docs.ovh.com/fr/overthebox/).
 You can download all supported images [here](http://downloads.overthebox.net/). This images are built by circle-ci on every new commit.
 
 ### On Linux
