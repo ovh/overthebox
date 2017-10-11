@@ -13,7 +13,7 @@ More information is available here:
 
 ## Install from pre-compiled images
 
-Guide to install the image is available in french [here](https://www.ovhtelecom.fr/overthebox/guides.xml).
+Guide to install the image is available in french [here](https://docs.ovh.com/fr/overthebox/).
 You can download all supported images [here](http://downloads.overthebox.net/). This images are built by circle-ci on every new commit.
 
 ### On Linux
@@ -30,7 +30,7 @@ gunzip -c latest.img.gz | sudo dd of=/dev/sdX bs=512
 sync
 ```
 
-Once you boot on the your USB key, the image will be flashed by default on `mmcblk0`, see [the recovery section](#create-a-recovery-key) for more information.
+Once you boot on your USB key, the image will be flashed by default on `mmcblk0`, see [the recovery section](#create-a-recovery-key) for more information.
 
 ## Install from source
 
@@ -46,34 +46,21 @@ sudo apt install build-essential git unzip ncurses-dev libz-dev libssl-dev
   python subversion gettext gawk wget curl rsync perl
 ```
 
-### Prepare
+### Prepare and build
 
 ```sh
 git clone https://github.com/ovh/overthebox.git
 cd overthebox
-```
-
-### Build for x86/64
-
-```sh
 ./build.sh
 ```
 
-You can also specify the image you want to build (e.g. otb / otb-debug).
-
-The default build will use `otb`.
-
-You can optionally add arguments to the build.
-
-```sh
-./build.sh otb-debug -j8
-```
-
+The script `build.sh` accepts all `make` arguments (like `-j`).
 When finished, files are located in the directory `source/bin`.
 
 ### Custom arch build
 
-By default the build script will create the packages for the `x86_64` architecture. You can specify a custom build target by adding a `OTB_TARGET` environment variable to the build and the corresponding `config-TARGET` file.
+By default the build script will create the packages for the `x86_64` architecture.
+You can specify a custom build target by adding a `OTB_TARGET` environment variable to the build and the corresponding `config-$OTB_TARGET` file.
 
 To build the project for the raspberry pi 3:
 
@@ -85,7 +72,9 @@ OTB_TARGET="rpi3" ./build.sh
 
 By default the image will try to flash itself on a device called `mmcblk0`, this is the default block device on our hardwares.
 
-If you wish to target another block device you can add `recovery=sda` to the kernel command line to flash the image on `/dev/sda`. This [file](https://github.com/ovh/overthebox/blob/master/root/lib/preinit/00_recovery) is responsible for flashing the image before the system starts.
+If you wish to target another block device you can add `recovery=sda` to the kernel command line to flash the image on `/dev/sda`.
+If the device doesn't exists, the recovery process is skipped.
+This [file](https://github.com/ovh/overthebox/blob/master/root/lib/preinit/00_recovery) is responsible for flashing the image before the system starts.
 
 ## Credits
 
