@@ -20,13 +20,13 @@ You can download all supported images [here](http://downloads.overthebox.net/). 
 
 Plug a USB drive, find the device you want to flash the image on using `dmesg`, `lsblk`,`fdisk -l` or the tool your most comfortable with.
 
-**This example will use `/dev/sdc` as the targeted block device, you should change the following commands with your own device name**
+**This example will use `/dev/sdX` as the targeted block device, you have to change the following commands with your own device name**
 
 ```sh
 # Download the lastest master's image
 wget http://downloads.overthebox.net/develop/targets/x86/64/latest.img.gz
 # Extract and flash the image on your device
-gunzip -c latest.img.gz | sudo dd of=/dev/sdc bs=512
+gunzip -c latest.img.gz | sudo dd of=/dev/sdX bs=512
 sync
 ```
 
