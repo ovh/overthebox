@@ -1,0 +1,37 @@
+#!/bin/sh
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+[ "$ACTION" = "released" ] || exit 0
+
+_log() {
+	logger -p daemon.info -t power.button "$@"
+}
+
+# File to keep the timestamps of the last clicks
+POWER_FILE=/tmp/otb-power-button
+
+# Number of clicks to trigger a reset
+OCCUR_TRIGGER=5
+
+# Time interval during which the number of clicks should be done
+OCCUR_DELAY=5
+
+# Add the current timestamp to the file
+date +%s >> "$POWER_FILE"
+
+# Compute the time range starting point
+limit=$(($(date +"%s")-OCCUR_DELAY))
+
+# Compute the number of occurrences (number of clicks for the last $OCCUR_DELAY
+# seconds)
+occur=$(awk '{if($1>'"$limit"')print $1}' "$POWER_FILE" | wc -l)
+
+# Only continue if 5 times in less than 5s
+[ "$occur" = "$OCCUR_TRIGGER" ] || exit 0
+
+_log "Power button pressed more than $OCCUR_TRIGGER time within $OCCUR_DELAY seconds"
+_log "Factory Reset initialized manually by user"
+
+# Set the SEEN var to 6 so that it will trigger the reset in the "reset" script
+export SEEN=6
+exec /etc/rc.button/reset
