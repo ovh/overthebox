@@ -1,0 +1,21 @@
+#!/bin/sh
+
+[ "${ACTION}" = "released" ] || exit 0
+
+RESET_COUNT=5
+SHUTDOWN_DELAY=10
+
+COUNT=$(pgrep -f "/sbin/poweroff -d $SHUTDOWN_DELAY" | wc -l)
+if [ "$COUNT" -eq "$RESET_COUNT" ]; then
+	pkill -f "/sbin/poweroff -d $SHUTDOWN_DELAY"
+	echo "Power button pressed $RESET_COUNT times in $SHUTDOWN_DELAY secs doing factory reset" > /dev/console
+	export SEEN=6
+	exec /etc/rc.button/reset
+elif [ "$COUNT" -gt 0 ]; then
+	echo "Power button $ACTION $COUNT times" > /dev/console
+	nohup /sbin/poweroff -d $SHUTDOWN_DELAY 1>/dev/null 2>/dev/null &
+else
+	echo "Shutdown scheduled in $SHUTDOWN_DELAY seconds" > /dev/console
+	nohup /sbin/poweroff -d $SHUTDOWN_DELAY 1>/dev/null 2>/dev/null &
+fi
+return 0
