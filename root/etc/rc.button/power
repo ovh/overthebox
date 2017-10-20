@@ -1,0 +1,22 @@
+#!/bin/sh
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+[ "$ACTION" = released ] || exit 0
+
+DELAY=5
+COUNT=5
+
+FILE="/tmp/otb-power-button"
+DATE=$(date +%s%3N)
+LIMIT=$((DATE-DELAY*1000))
+
+logger -t power.button "Power button pressed at $DATE"
+
+( tail $FILE; echo "$DATE" ) > $FILE.tmp && mv $FILE.tmp $FILE
+
+awk "BEGIN{C=0} {if (\$1>=$LIMIT) C=C+1} END{exit C!=$COUNT}" $FILE || exit 0
+
+logger -t power.button "RESET !!"
+
+firstboot -y
+reboot
