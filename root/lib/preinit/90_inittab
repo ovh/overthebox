@@ -3,10 +3,10 @@
 # On V2B ttyS0 is used for the switch
 
 do_inittab() {
-	if [ -f /sys/devices/virtual/dmi/id/product_version ]; then
-		pv=$(cat /sys/devices/virtual/dmi/id/product_version)
-		[ "$pv" = V2B ] && sed -i /ttyS0/d /etc/inittab
-	fi
+	grep -sq V2B /sys/devices/virtual/dmi/id/product_version || return
+	grep -sv ttyS0 /etc/inittab > /inittab || true
+	cmp -s /etc/inittab /inittab && return
+	[ -s /inittab ] && mv -f /inittab /etc/inittab
 }
 
 boot_hook_add preinit_main do_inittab
