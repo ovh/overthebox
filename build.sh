@@ -10,7 +10,7 @@ _get_repo() {
 	git -C "$1" remote set-url origin "$2"
 	git -C "$1" fetch origin
 	git -C "$1" fetch origin --tags
-	git -C "$1" checkout "origin/$3" -B "$3"
+	git -C "$1" checkout "origin/$3" -B "build" || git -C "$1" checkout "$3" -B "build"
 }
 
 OTB_DIST=${OTB_DIST:-otb}
@@ -26,7 +26,7 @@ if [ ! -f "$OTB_TARGET_CONFIG" ]; then
 fi
 
 _get_repo source https://github.com/ovh/overthebox-lede "otb-master-17.11.03"
-_get_repo feeds/packages https://github.com/openwrt/packages "lede-17.01"
+_get_repo feeds/packages https://github.com/openwrt/packages "0230af3b20274597d5258c8f425a6883d1fa3d2a"
 _get_repo feeds/luci https://github.com/openwrt/luci "for-15.05"
 
 if [ -z "$OTB_FEED" ]; then
