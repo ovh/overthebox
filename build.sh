@@ -17,8 +17,12 @@ OTB_DIST=${OTB_DIST:-otb}
 OTB_HOST=${OTB_HOST:-$(curl -sS ipaddr.ovh)}
 OTB_PORT=${OTB_PORT:-8000}
 OTB_REPO=${OTB_REPO:-http://$OTB_HOST:$OTB_PORT/$OTB_PATH}
+
 OTB_TARGET=${OTB_TARGET:-x86_64}
 OTB_TARGET_CONFIG="config-$OTB_TARGET"
+
+OTB_FEED_URL="${OTB_FEED_URL:-https://github.com/ovh/overthebox-feeds}"
+OTB_FEED_SRC="${OTB_FEED_SRC:-master}"
 
 if [ ! -f "$OTB_TARGET_CONFIG" ]; then
 	echo "Target $OTB_TARGET not found !"
@@ -31,7 +35,7 @@ _get_repo feeds/luci https://github.com/openwrt/luci "for-15.05"
 
 if [ -z "$OTB_FEED" ]; then
 	OTB_FEED=feeds/overthebox
-	_get_repo "$OTB_FEED" https://github.com/ovh/overthebox-feeds "${OTB_FEED_SRC:-master}"
+	_get_repo "$OTB_FEED" "$OTB_FEED_URL" "$OTB_FEED_SRC"
 fi
 
 if [ -n "$1" ] && [ -f "$OTB_FEED/$1/Makefile" ]; then
