@@ -43,6 +43,11 @@ esac
 
 [ "$count" = 1 ] || exit
 
+while grep -sq /boot /proc/mounts; do
+	logger -t "$0" "Unmount /boot..."
+	umount /boot || sleep 1
+done
+
 _mount() {
 	mount -t vfat "$1" /mnt
 }
