@@ -29,8 +29,8 @@ if [ ! -f "$OTB_TARGET_CONFIG" ]; then
 	exit 1
 fi
 
-_get_repo source https://github.com/ovh/overthebox-lede "otb-master-17.11.03"
-_get_repo feeds/packages https://github.com/openwrt/packages "0230af3b20274597d5258c8f425a6883d1fa3d2a"
+_get_repo source https://github.com/ovh/overthebox-lede "otb-master-18.02.14"
+_get_repo feeds/packages https://github.com/openwrt/packages "9df6a01bb1cca456e7bb3815a44ea3dd0b69a9d6"
 _get_repo feeds/luci https://github.com/openwrt/luci "for-15.05"
 
 if [ -z "$OTB_FEED" ]; then
