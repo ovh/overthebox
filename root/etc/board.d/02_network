@@ -24,6 +24,8 @@ case "$board" in
 		ucidef_set_interface_raw "wan$num" "eth$num" "dhcp"
 	done
 	if [ "$num" = 0 ]; then
+		ucidef_set_interface_macaddr "lan" "auto"
+
 		ucidef_set_interface_raw "wan" "eth0" "dhcp"
 		ucidef_set_interface_macaddr "wan" "auto"
 	fi
