@@ -64,6 +64,8 @@ EOF
 
 cat "$OTB_TARGET_CONFIG" config -> source/.config <<EOF
 CONFIG_IMAGEOPT=y
+CONFIG_IB=y
+CONFIG_IB_STANDALONE=y
 CONFIG_VERSIONOPT=y
 CONFIG_VERSION_DIST="$OTB_DIST"
 CONFIG_VERSION_REPO="$OTB_REPO"
@@ -85,3 +87,5 @@ cp .config.keep .config
 
 make defconfig
 make "$@"
+
+tar zcf bin/imagebuilder-files.tgz files
