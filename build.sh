@@ -47,11 +47,6 @@ if [ -z "$OTB_FEED" ]; then
 	_get_repo "$OTB_FEED" "$OTB_FEED_URL" "$OTB_FEED_SRC"
 fi
 
-if [ -n "$1" ] && [ -f "$OTB_FEED/$1/Makefile" ]; then
-	OTB_DIST=$1
-	shift 1
-fi
-
 rm -rf source/bin source/files source/tmp
 cp -rf root source/files
 
@@ -82,7 +77,6 @@ CONFIG_VERSION_REPO="$OTB_REPO"
 CONFIG_VERSION_NUMBER="$(git describe --tag --always)"
 CONFIG_VERSION_CODE="$(git -C "$OTB_FEED" describe --tag --always)"
 CONFIG_PACKAGE_$OTB_DIST=y
-CONFIG_PACKAGE_${OTB_DIST}-full=m
 EOF
 
 echo "Building $OTB_DIST for the target $OTB_TARGET"
