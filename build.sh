@@ -35,9 +35,9 @@ if [ ! -f "$OTB_TARGET_CONFIG" ]; then
 	exit 1
 fi
 
-OTB_FEED_BRANCH="openwrt-18.06@{2018-08-13 00:00:00}"
+OTB_FEED_BRANCH="openwrt-18.06@{2018-09-04 00:00:00}"
 
-_get_repo source https://github.com/ovh/overthebox-lede "otb-18.08.13"
+_get_repo source https://github.com/ovh/overthebox-lede "otb-18.09.04"
 _get_repo feeds/packages https://github.com/openwrt/packages "$OTB_FEED_BRANCH"
 _get_repo feeds/luci https://github.com/openwrt/luci "$OTB_FEED_BRANCH"
 _get_repo feeds/routing https://github.com/openwrt-routing/packages "$OTB_FEED_BRANCH"
