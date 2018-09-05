@@ -19,21 +19,23 @@ _get_repo() (
 	git checkout "origin/$3" -B "build" 2>/dev/null || git checkout "$3" -B "build"
 )
 
-OTB_DIST=${OTB_DIST:-otb}
 OTB_HOST=${OTB_HOST:-$(curl -sS ipaddr.ovh)}
 OTB_PORT=${OTB_PORT:-8000}
 OTB_REPO=${OTB_REPO:-http://$OTB_HOST:$OTB_PORT/$OTB_PATH}
 
 OTB_TARGET=${OTB_TARGET:-x86_64}
-OTB_TARGET_CONFIG="config-$OTB_TARGET"
+OTB_CONFIG=${OTB_CONFIG:-net-full nice-bb usb-full legacy}
+OTB_PKGS=${OTB_PKGS:-vim-full netcat htop iputils-ping bmon bwm-ng screen mtr ss strace tcpdump-mini ethtool sysstat pciutils mini_snmpd}
 
 OTB_FEED_URL="${OTB_FEED_URL:-https://github.com/ovh/overthebox-feeds}"
 OTB_FEED_SRC="${OTB_FEED_SRC:-master}"
 
-if [ ! -f "$OTB_TARGET_CONFIG" ]; then
-	echo "Target $OTB_TARGET not found !"
-	exit 1
-fi
+for i in $OTB_TARGET $OTB_CONFIG; do
+	if [ ! -f "config/$i" ]; then
+		echo "Config $i not found !"
+		exit 1
+	fi
+done
 
 OTB_FEED_BRANCH="openwrt-18.06@{2018-09-04 00:00:00}"
 
@@ -52,7 +54,6 @@ cp -rf root source/files
 
 cat >> source/files/etc/banner <<EOF
 -----------------------------------------------------
- PACKAGE:     $OTB_DIST
  VERSION:     $(git describe --tag --always)
 
  BUILD REPO:  $(git config --get remote.origin.url)
@@ -67,19 +68,18 @@ src-link routing $(readlink -f feeds/routing)
 src-link overthebox $(readlink -f "$OTB_FEED")
 EOF
 
-cat "$OTB_TARGET_CONFIG" config -> source/.config <<EOF
+cat > source/.config <<EOF
+$(for i in $OTB_TARGET $OTB_CONFIG; do cat "config/$i"; done)
 CONFIG_IMAGEOPT=y
-CONFIG_IB=y
-CONFIG_IB_STANDALONE=y
 CONFIG_VERSIONOPT=y
-CONFIG_VERSION_DIST="$OTB_DIST"
+CONFIG_VERSION_DIST="OverTheBox"
 CONFIG_VERSION_REPO="$OTB_REPO"
 CONFIG_VERSION_NUMBER="$(git describe --tag --always)"
 CONFIG_VERSION_CODE="$(git -C "$OTB_FEED" describe --tag --always)"
-CONFIG_PACKAGE_$OTB_DIST=y
+$(for i in otb $OTB_PKGS; do echo "CONFIG_PACKAGE_$i=y"; done)
 EOF
 
-echo "Building $OTB_DIST for the target $OTB_TARGET"
+echo "Building for the target $OTB_TARGET"
 
 cd source
 
@@ -87,6 +87,8 @@ cp .config .config.keep
 scripts/feeds clean
 scripts/feeds update -a
 scripts/feeds install -a -d y -f -p overthebox
+# shellcheck disable=SC2086
+scripts/feeds install -d y $OTB_PKGS
 cp .config.keep .config
 
 make defconfig
