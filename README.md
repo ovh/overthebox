@@ -60,7 +60,7 @@ When finished, files are located in the directory `source/bin`.
 ### Custom arch build
 
 By default the build script will create the packages for the `x86_64` architecture.
-You can specify a custom build target by adding a `OTB_TARGET` environment variable to the build and the corresponding `config-$OTB_TARGET` file.
+You can specify a custom build target by adding a `OTB_TARGET` environment variable to the build and the corresponding `config/$OTB_TARGET` file.
 
 To build the project for the raspberry pi 3:
 
