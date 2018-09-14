@@ -4,7 +4,7 @@ jobs:
     machine: true
 
     environment:
-        OTB_TARGET: x86_64
+        OTB_TARGET: rpi3
 
     working_directory: ~/build
 
