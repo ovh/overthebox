@@ -5,13 +5,19 @@ set -e
 umask 0022
 unset GREP_OPTIONS SED
 
-_get_repo() {
-	git clone "$2" "$1" 2>/dev/null || true
-	git -C "$1" remote set-url origin "$2"
-	git -C "$1" fetch origin
-	git -C "$1" fetch origin --tags
-	git -C "$1" checkout "origin/$3" -B "build" || git -C "$1" checkout "$3" -B "build"
-}
+_get_repo() (
+	mkdir -p "$1"
+	cd "$1"
+	[ -d .git ] || git init
+	if git remote get-url origin >/dev/null 2>/dev/null; then
+		git remote set-url origin "$2"
+	else
+		git remote add origin "$2"
+	fi
+	git fetch origin
+	git fetch origin --tags
+	git checkout "origin/$3" -B "build" 2>/dev/null || git checkout "$3" -B "build"
+)
 
 OTB_DIST=${OTB_DIST:-otb}
 OTB_HOST=${OTB_HOST:-$(curl -sS ipaddr.ovh)}
@@ -22,15 +28,15 @@ OTB_TARGET=${OTB_TARGET:-x86_64}
 OTB_TARGET_CONFIG="config-$OTB_TARGET"
 
 OTB_FEED_URL="${OTB_FEED_URL:-https://github.com/ovh/overthebox-feeds}"
-OTB_FEED_SRC="${OTB_FEED_SRC:-master}"
+OTB_FEED_SRC="${OTB_FEED_SRC:-v0.6}"
 
 if [ ! -f "$OTB_TARGET_CONFIG" ]; then
 	echo "Target $OTB_TARGET not found !"
 	exit 1
 fi
 
-_get_repo source https://github.com/ovh/overthebox-lede "otb-master-18.02.14"
-_get_repo feeds/packages https://github.com/openwrt/packages "9df6a01bb1cca456e7bb3815a44ea3dd0b69a9d6"
+_get_repo source https://github.com/ovh/overthebox-lede "otb-mptcp-18.10.05"
+_get_repo feeds/packages https://github.com/openwrt/packages "openwrt-18.06@{2018-10-05 00:00:00}"
 _get_repo feeds/luci https://github.com/openwrt/luci "for-15.05"
 
 if [ -z "$OTB_FEED" ]; then
