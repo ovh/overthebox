@@ -15,6 +15,10 @@ case "$board" in
 		"7:lan" "8:lan" "9:lan" "10:lan" "11:lan" "12:lan" \
 		"17:lan" "18:lan" "13:wan13" "14:wan14"
 	;;
+compulab-cm-iam-sbc-fitpc2i)
+	ucidef_set_interface_raw "lan" "eth0" "static"
+	ucidef_set_interface_raw "wan" "eth1" "dhcp"
+	;;
 *)
 	ucidef_set_interface_raw "lan" "eth0" "static"
 	num=0
