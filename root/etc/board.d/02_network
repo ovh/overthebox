@@ -8,11 +8,6 @@ board_config_update
 board="$(cat /tmp/sysinfo/board_name)" 2>/dev/null
 
 case "$board" in
-pc-engines-apu*)
-	ucidef_set_interface_raw "lan"  "eth0" "static"
-	ucidef_set_interface_raw "wan1" "eth1" "dhcp"
-	ucidef_set_interface_raw "wan2" "eth2" "dhcp"
-	;;
 *overthebox-v2b)
 	# vlan 1 doesn't work and port 16 is not used so use it for a null role
 	ucidef_add_switch "otbv2sw" "15t@eth0" "16:none" \
@@ -22,10 +17,18 @@ pc-engines-apu*)
 	;;
 *)
 	ucidef_set_interface_raw "lan" "eth0" "static"
-	ucidef_set_interface_macaddr "lan" "auto"
+	num=0
+	for i in /sys/class/net/eth[!0]*; do
+		[ -e "$i" ] || continue
+		num=${i##*/eth}
+		ucidef_set_interface_raw "wan$num" "eth$num" "dhcp"
+	done
+	if [ "$num" = 0 ]; then
+		ucidef_set_interface_macaddr "lan" "auto"
 
-	ucidef_set_interface_raw "if0" "eth0" "dhcp"
-	ucidef_set_interface_macaddr "if0" "auto"
+		ucidef_set_interface_raw "if0" "eth0" "dhcp"
+		ucidef_set_interface_macaddr "if0" "auto"
+	fi
 	;;
 esac
 
