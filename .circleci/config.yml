@@ -1,0 +1,44 @@
+version: 2
+jobs:
+  build:
+    machine: true
+
+    environment:
+        OTB_TARGET: x86_64
+
+    working_directory: ~/build
+
+    steps:
+      - checkout
+
+      - run:
+          name: Prepare
+          command: |
+            sudo apt-get update
+            sudo apt-get install -yq build-essential git unzip ncurses-dev libz-dev libssl-dev python subversion gettext gawk wget curl rsync perl
+            echo "cache 1 $OTB_TARGET" > /tmp/cache-target
+
+      - restore_cache:
+          keys:
+            - cache-{{ checksum "/tmp/cache-target" }}
+
+      - run:
+          name: Build
+          no_output_timeout: 30m
+          command: |
+            export OTB_PATH="$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/${CIRCLE_BRANCH:-$CIRCLE_TAG}"
+            sh build.sh -j2
+
+      - run:
+          name: Deploy
+          command: |
+            OTB_PATH="$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/${CIRCLE_BRANCH:-$CIRCLE_TAG}"
+            ssh -p ${OTB_RSYNC_PORT:-22} deploy@$OTB_HOST mkdir -p deploy/$OTB_PATH || true
+            rsync -av --delete-after -e "ssh -q -p ${OTB_RSYNC_PORT:-22}" source/bin/ deploy@$OTB_HOST:deploy/$OTB_PATH/ || true
+            rm -rf source/bin
+
+      - save_cache:
+          key: cache-{{ checksum "/tmp/cache-target" }}
+          paths:
+            - "source"
+            - "feeds"
