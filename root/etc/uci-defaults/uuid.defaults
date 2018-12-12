@@ -41,7 +41,8 @@ case "$disk" in
 		;;
 esac
 
-[ "$count" = 1 ] || exit
+# Do not rewrite the uuid if there is no disk with the same uuid
+[ "$count" = 1 ] && exit
 
 while grep -sq /boot /proc/mounts; do
 	logger -t "$0" "Unmount /boot..."
