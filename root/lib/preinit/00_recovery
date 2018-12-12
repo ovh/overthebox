@@ -15,15 +15,18 @@ if read -r CMD < /proc/cmdline; then
 	esac
 fi
 
+# Return if the target does not exist
 [ -b /dev/"$TARGET" ] || return
 
-# get DEVNAME
+# Get DEVNAME of the boot device
 . /lib/upgrade/common.sh
 export_bootdevice
 . /sys/dev/block/"$BOOTDEV_MAJOR:$BOOTDEV_MINOR"/uevent
 
+# If the boot device is the same as the target, return
 [ "$DEVNAME" = "$TARGET" ] && return
 
+# Get the size of the usb filesystem
 COUNT=0
 for part in /sys/dev/block/"$BOOTDEV_MAJOR:$BOOTDEV_MINOR/$DEVNAME"*; do
 	START=$(cat "$part"/start)
