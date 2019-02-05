@@ -76,7 +76,6 @@ CONFIG_VERSION_DIST="OverTheBox"
 CONFIG_VERSION_REPO="$OTB_REPO"
 CONFIG_VERSION_NUMBER="$(git describe --tag --always)"
 CONFIG_VERSION_CODE="$(git -C "$OTB_FEED" describe --tag --always)"
-# CONFIG_PACKAGE_dnsmasq is not set
 $(for i in otb $OTB_PKGS; do echo "CONFIG_PACKAGE_$i=y"; done)
 EOF
 
