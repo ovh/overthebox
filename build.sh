@@ -93,5 +93,3 @@ cp .config.keep .config
 
 make defconfig
 make "$@"
-
-tar zcf bin/imagebuilder-files.tgz files
