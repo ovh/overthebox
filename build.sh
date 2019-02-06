@@ -37,9 +37,9 @@ for i in $OTB_TARGET $OTB_CONFIG; do
 	fi
 done
 
-OTB_FEED_BRANCH="openwrt-18.06@{2018-11-20 00:00:00}"
+OTB_FEED_BRANCH="openwrt-18.06@{2019-02-05 00:00:00}"
 
-_get_repo source https://github.com/ovh/overthebox-lede "otb-18.11.20"
+_get_repo source https://github.com/ovh/overthebox-lede "otb-19.02.05"
 _get_repo feeds/packages https://github.com/openwrt/packages "$OTB_FEED_BRANCH"
 _get_repo feeds/luci https://github.com/openwrt/luci "$OTB_FEED_BRANCH"
 _get_repo feeds/routing https://github.com/openwrt-routing/packages "$OTB_FEED_BRANCH"
