@@ -1,0 +1,18 @@
+#!/bin/sh
+# shellcheck disable=1091
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+. /lib/functions/uci-defaults.sh
+
+board_config_update
+
+case "$(board_name)" in
+pc-engines-apu*)
+	ucidef_set_led_default "power" "power" "apu2:green:power" "1"
+	ucidef_set_led_default "connectivity" "connectivity" "apu2:green:led2" "0"
+	ucidef_set_led_default "service" "service" "apu2:green:led3" "0"
+	;;
+esac
+board_config_flush
+
+exit 0

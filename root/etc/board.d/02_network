@@ -1,4 +1,6 @@
 #!/bin/sh
+# shellcheck disable=1091
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
 
 . /lib/functions/system.sh
 . /lib/functions/uci-defaults.sh
