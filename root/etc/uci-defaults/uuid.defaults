@@ -43,16 +43,18 @@ esac
 
 [ "$count" = 1 ] || exit
 
-count=0
+umount_retry=60
+
 while grep -sq /boot /proc/mounts; do
 	logger -t "$0" "Unmount /boot..."
 	output=$(umount /boot 2>&1) && continue
 	logger -t "$0" "Umount failed: $output"
-	count=$((count+1))
-	if [ "$count" = 10 ]; then
-		logger -t "$0" "Failed to unmount /boot after $count tries"
-		exit 1
+	if [ "$umount_retry" = 0 ]; then
+		logger -t "$0" "Force unmount..."
+		umount -f /boot 1>/dev/null 2>/dev/null
+		break
 	fi
+	umount_retry=$((umount_retry - 1))
 	sleep 1
 done
 
