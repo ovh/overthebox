@@ -1,6 +1,10 @@
 #!/bin/sh
 # shellcheck disable=SC1090,SC1091
 
+_uuid64() {
+	dd if=/dev/"$1" bs=1 skip=440 count=4 2>/dev/null | base64
+}
+
 TARGET=mmcblk0
 
 if read -r CMD < /proc/cmdline; then
@@ -23,6 +27,9 @@ export_bootdevice
 . /sys/dev/block/"$BOOTDEV_MAJOR:$BOOTDEV_MINOR"/uevent
 
 [ "$DEVNAME" = "$TARGET" ] && return
+SUUID="$(_uuid64 "$DEVNAME")"
+TUUID="$(_uuid64 "$TARGET")"
+[ "$SUUID" = "$TUUID" ] && return
 
 COUNT=0
 for part in /sys/dev/block/"$BOOTDEV_MAJOR:$BOOTDEV_MINOR/$DEVNAME"*; do
