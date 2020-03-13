@@ -1,0 +1,25 @@
+version: v1.0
+name: overthebox-build
+jobs:
+- job: Build image feeds
+  steps:
+  - gitClone:
+      branch: '{{.git.branch}}'
+      commit: '{{.git.hash}}'
+      directory: '{{.cds.workspace}}'
+      privateKey: proj-stash.key
+      url: git@github.com:CedricCopy/overthebox.git
+  - script:
+    - '#!/bin/sh'
+    - export FORCE_UNSAFE_CONFIGURE=1
+    - '{{.cds.workspace}}/build.sh -j16'
+    - tar cvf binary.tar.gz source/bin
+  - artifactUpload:
+      path: '{{.cds.workspace}}/binary.tar.gz'
+      tag: '{{.cds.version}}'
+  - artifactUpload:
+      path: '{{.cds.workspace}}/source/staging_dir/host/bin/usign'
+      tag: '{{.cds.version}}'
+  requirements:
+  - model: compute.gra1/Debian10-GRA1
+  - binary: git

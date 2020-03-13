@@ -1,0 +1,34 @@
+version: v1.0
+name: sign_package
+jobs:
+- job: Sign package
+  steps:
+  - artifactDownload:
+      path: .
+      tag: '{{.cds.version}}'
+  - script:
+    - '#!/bin/sh'
+    - tar xf binary.tar.gz
+    - echo '{{.cds.env.signing_key.priv}}' >  signing_key.priv
+    - ""
+    - '#cat <<EOF > signing_key.priv'
+    - '#{{.cds.env.signing_key.priv}}'
+    - '#EOF'
+    - ""
+    - cat signing_key.priv
+    - key=signing_key.priv
+    - path={{.cds.workspace}}/source
+    - ""
+    - find "{{.cds.workspace}}/source" \( -name '*.img.gz' -or -name 'Packages' \)
+      -exec ./usign -S -m {} -s "signing_key.priv" \;
+    - '#  -exec echo {} \;'
+    - find "{{.cds.workspace}}/source" \( -name '*.img.gz' -or -name 'Packages' \)
+      -exec echo {} \;
+    - ""
+    - ""
+    - ""
+  - artifactUpload:
+      path: usign
+      tag: '{{.cds.version}}'
+  requirements:
+  - binary: git
