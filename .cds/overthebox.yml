@@ -1,0 +1,24 @@
+name: OTB_Feeds
+description: Build for OTB
+version: v2.0
+workflow:
+  overthebox-build:
+    pipeline: overthebox-build
+    application: overthebox_dev_ccopy
+    payload:
+      git.author: ""
+      git.branch: master
+      git.hash: ""
+      git.hash.before: ""
+      git.message: ""
+      git.repository: CedricCopy/overthebox-feeds
+      git.tag: ""
+  sign_package:
+    depends_on:
+    - overthebox-build
+    when:
+    - success
+    pipeline: sign_package
+    environment: signing_prod
+metadata:
+  default_tags: git.branch,git.author
