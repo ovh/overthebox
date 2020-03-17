@@ -1,0 +1,18 @@
+#!/bin/sh
+
+SYNC=1
+DELAY=
+
+for arg in "$@"; do
+	case "$arg" in
+		-d) DELAY=0 ;;
+		-n) SYNC= ;;
+		-*) ;;
+		[0-9]*) [ "$DELAY" = 0 ] && DELAY=$arg ;;
+	esac
+done
+
+[ "$DELAY" ] && sleep "$DELAY"
+[ "$SYNC"  ] && sync
+
+reboot
