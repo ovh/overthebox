@@ -1,0 +1,53 @@
+#!/bin/sh
+# shellcheck disable=SC1090
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+set -e
+
+_get_uuid() {
+	# shellcheck disable=SC2046
+	set -- $(dd if="$1" bs=1 skip=440 count=4 2>/dev/null | hexdump -v -e '4/1 "%02x "')
+	echo "$4$3$2$1"
+}
+
+read -r cmdline < /proc/cmdline
+
+uuid=
+case "$cmdline" in
+	*PARTUUID=*)
+		uuid="${cmdline##*PARTUUID=}"
+		uuid="${uuid%%-[a-f0-9][a-f0-9]*}" ;;
+	*) return 1
+esac
+[ "$uuid" ]
+
+disk=
+for uevent in /sys/class/block/*/uevent; do
+	. "$uevent"
+	[ "$DEVTYPE" = disk ] || continue
+	[ "$(_get_uuid "/dev/$DEVNAME")" = "$uuid" ] || continue
+	[ "$disk" ] && return 1
+	disk="$DEVNAME"
+done
+[ "$disk" ]
+
+part=
+for uevent in /sys/class/block/"$disk"*/uevent; do
+	. "$uevent"
+	[ "$DEVTYPE$MINOR" = partition1 ] || continue
+	part="$DEVNAME"
+	break
+done
+[ "$part" ]
+
+logger -t "$0" "Update UUID of $disk"
+mount -t vfat -o rw,noatime "/dev/$part" /mnt
+
+dd if=/dev/urandom of="/dev/$disk" bs=1 count=4 seek=440 conv=notrunc 2>/dev/null || true
+sed -i "s/[a-fA-F0-9]\\{8\\}/$(_get_uuid "/dev/$disk")/g" /mnt/efi/boot/boot.nsh /mnt/boot/grub/grub.cfg
+
+sync
+umount /mnt
+logger -t "$0" "Done"
+
+[ -f "$0" ] && rm -f "$0"
