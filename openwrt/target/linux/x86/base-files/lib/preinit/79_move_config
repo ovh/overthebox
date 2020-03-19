@@ -8,7 +8,7 @@ move_config() {
 
 	if export_bootdevice && export_partdevice partdev 1; then
 		mkdir -p /boot
-		mount -t ext4 -o rw,noatime "/dev/$partdev" /boot
+		mount -t vfat -o rw,noatime "/dev/$partdev" /boot
 		if [ -f "/boot/$BACKUP_FILE" ]; then
 			mv -f "/boot/$BACKUP_FILE" /
 		fi
