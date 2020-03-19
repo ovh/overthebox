@@ -1,0 +1,24 @@
+#!/bin/sh
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+# check for one and only one interface
+[ "$(find /sys/class/net/ -name 'eth*' | wc -l)" = 1 ] || return 0
+
+# skip if wan* already exists
+uci -q show network | grep -sq wan && return 0
+
+otb_set_macvlan() {
+	uci -q batch <<-EOF
+	set network.$1=interface
+	set network.$1.ifname='$1'
+	set network.$1.proto='$3'
+	set network.$1_dev=device
+	set network.$1_dev.name='$1'
+	set network.$1_dev.type='macvlan'
+	set network.$1_dev.ifname='$2'
+	set network.$1_dev.macaddr='auto'
+	EOF
+}
+
+otb_set_macvlan lan eth0 static
+otb_set_macvlan wan eth0 dhcp

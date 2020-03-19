@@ -2,9 +2,6 @@
 # shellcheck disable=SC1091,SC2039
 # vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
 
-# lan is now a bridge
-uci -q set "network.lan.type=bridge"
-
 # just remove glorytun config, this will also force a reconfigure after migration
 if [ "$(uci -q get "network.xtun0")" = interface ]; then
 	logger -t update -p 6 "Delete tun0/xtun0"
@@ -14,19 +11,6 @@ if [ "$(uci -q get "network.xtun0")" = interface ]; then
 	delete network.xtun0
 	del_list firewall.wan.network=tun0
 	del_list firewall.wan.network=xtun0
-	EOF
-fi
-
-if [ "$(uci -q get "network.if0")" = interface ]; then
-	logger -t update -p 6 "Rename if0 to wan"
-	uci -q batch <<-EOF
-	rename network.if0=wan
-	rename network.if0_dev=wan_dev
-	set network.wan.ifname=wan
-	set network.wan_dev.name=wan
-	del_list firewall.wan.network=if0
-	del_list firewall.wan.network=wan
-	add_list firewall.wan.network=wan
 	EOF
 fi
 
