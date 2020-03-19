@@ -1,0 +1,135 @@
+#!/bin/sh
+# shellcheck disable=SC1091,SC2039
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+set -e
+set -o pipefail
+
+. /lib/functions.sh
+. /lib/functions/network.sh
+. /lib/overthebox
+
+[ "$OTB_SERVICE_ID" ]
+
+INTERFACES="[]"
+MOUNTS="[]"
+
+_ununitify() {
+	V=$(echo "$1" | tr -dc '0-9')
+
+	BYTES=1
+	case "$1" in
+		*b|*bit|*bits) BYTES=8 ;;
+	esac
+
+	SIZE=1
+	case "$1" in
+		*[Gg]|*[Gg]i*) SIZE="$((1024*1024*1024))" ;;
+		*[Mm]|*[Mm]i*) SIZE="$((1024*1024))" ;;
+		*[Kk]|*[Kk]i*) SIZE="$((1024))" ;;
+		*[Gg]*) SIZE="$((1000*1000*1000))" ;;
+		*[Mm]*) SIZE="$((1000*1000))" ;;
+		*[Kk]*) SIZE="$((1000))" ;;
+	esac
+
+	echo "$((V*SIZE/BYTES))"
+}
+
+_get_interface_json() {
+	local ipaddr gateway subnet asn
+	network_get_ipaddr ipaddr "$1"
+	network_get_gateway gateway "$1"
+	network_get_subnet subnet "$1"
+
+	asn="$(otb_get_data "$ipaddr/asn" | jq -c '{
+		country: .as_country_code,
+		description: .as_description,
+		number: .as_number,
+	}')"
+	[ "$asn" ] || asn="null"
+
+	# Retrieve the netmask from the subnet
+	eval "$(ipcalc.sh "$subnet" | grep NETMASK)"
+
+	local ifname label upload download multipath
+	config_get ifname "$1" ifname
+	config_get label "$1" label
+	config_get upload "$1" upload "0"
+	config_get download "$1" download "0"
+	config_get multipath "$1" multipath
+
+	upload="$(_ununitify "$upload")"
+	download="$(_ununitify "$download")"
+
+	local traffic_control="static"
+	[ "$upload-$download" = "0-0" ] && traffic_control="off"
+
+	ubus call "network.interface.$1" status | jq -c \
+		--argjson asn "$asn" \
+		--arg name "$1" \
+		--arg ipaddr "$ipaddr" \
+		--arg netmask "$NETMASK" \
+		--arg gateway "$gateway" \
+		--arg device "$ifname" \
+		--arg public_ip "$(otb_get_data "$ipaddr/pubip")" \
+		--arg traffic_control "$traffic_control" \
+		--arg _label "$label" \
+		--arg upload "$upload" \
+		--arg download "$download" \
+		--arg multipath "$multipath" '{
+			as: $asn,
+			ip: $ipaddr,
+			netmask: $netmask,
+			gateway: $gateway,
+			public_ip: $public_ip,
+			dns_servers: ."dns-server",
+			name: $name,
+			label: $_label,
+			device: $device,
+			traffic_control: $traffic_control,
+			upload: $upload|tonumber,
+			download: $download|tonumber,
+			multipath_status: $multipath,
+		}'
+}
+
+_get_interface() {
+	interface=$(_get_interface_json "$1")
+	INTERFACES=$(jq -n -c \
+		--argjson interfaces "$INTERFACES" \
+		--argjson interface "$interface" \
+		'$interfaces + [$interface]')
+	otb_debug "$(printf "\\nInterface $1 properties:\\n%s" "$(otb_pretty_print "$interface")")"
+}
+
+_get_mounts() {
+	while read -r dev mount_point fs options _; do
+		MOUNTS=$(jq -n -c \
+			--argjson mounts "$MOUNTS" \
+			--arg dev "$dev" \
+			--arg mount_point "$mount_point" \
+			--arg fs "$fs" \
+			--arg options "$options" \
+			'$mounts + [{
+				device: $dev,
+				mount_point: $mount_point,
+				fs: $fs,
+				options: $options,
+			}]')
+	done < /proc/mounts
+	otb_debug "$(printf "\\nMounts :\\n%s" "$(otb_pretty_print "$MOUNTS")")"
+}
+
+config_load network
+config_foreach _get_interface interface ret
+
+_get_mounts
+
+ubus call system board | jq -c \
+	--argjson interfaces "$INTERFACES" \
+	--argjson mounts "$MOUNTS" '{
+		interfaces: $interfaces,
+		mounts: $mounts,
+		release: .release,
+		board: del(.release)
+	}' | otb_device_post properties -d@-

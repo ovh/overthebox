@@ -1,0 +1,45 @@
+#!/bin/sh
+# shellcheck disable=SC1091,SC2039
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+# lan is now a bridge
+uci -q set "network.lan.type=bridge"
+
+# just remove glorytun config, this will also force a reconfigure after migration
+if [ "$(uci -q get "network.xtun0")" = interface ]; then
+	logger -t update -p 6 "Delete tun0/xtun0"
+	true > /etc/config/glorytun
+	uci -q batch <<-EOF
+	delete network.tun0
+	delete network.xtun0
+	del_list firewall.wan.network=tun0
+	del_list firewall.wan.network=xtun0
+	EOF
+fi
+
+if [ "$(uci -q get "network.if0")" = interface ]; then
+	logger -t update -p 6 "Rename if0 to wan"
+	uci -q batch <<-EOF
+	rename network.if0=wan
+	rename network.if0_dev=wan_dev
+	set network.wan.ifname=wan
+	set network.wan_dev.name=wan
+	del_list firewall.wan.network=if0
+	del_list firewall.wan.network=wan
+	add_list firewall.wan.network=wan
+	EOF
+fi
+
+# delete old stuff
+sed -i '/169.254.254.1 api/d; /213.186.33.11 provisionning.overthebox.net/d' /etc/hosts
+uci -q delete "dhcp.api_hostrecord"
+rm -f /etc/sysctl.d/shadowsocks.conf
+rm -f /etc/config/shadowsocks
+rm -f /etc/config/otb-tracker
+rm -rf /usr/share/otb/post-tracking.d
+rm -f /etc/sysctl.d/ipv6default.conf
+
+# remove old 30xxx rules
+for rule in $(uci show network | grep -s "network\\..*\\.priority='30[0-9][0-9][0-9]'"); do
+	uci -q del "${rule%.*}"
+done

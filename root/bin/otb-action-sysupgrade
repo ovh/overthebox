@@ -1,0 +1,36 @@
+#!/bin/sh
+# shellcheck disable=SC1091
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+set -e
+
+. /lib/overthebox
+. /lib/upgrade/common.sh
+
+export_bootdevice || {
+	otb_err "Invalid /proc/cmdline, please reboot your device"
+	exit 1
+}
+
+if [ -z "$1" ]; then
+	url="$(grep core /etc/opkg/distfeeds.conf | cut -d' ' -f3)/../latest.img.gz"
+else
+	case "$1" in
+		http*.img.gz|ftp*.img.gz) url=$1 ;;
+		*) url=$(otb_json_get "$1" "arguments.url") ;;
+	esac
+fi
+
+cd /tmp
+
+otb_info "Downloading image from '$url'..."
+curl -sS --connect-timeout 5 "$url.sig" -o img.gz.sig
+curl -sS --connect-timeout 5 "$url"     -o img.gz
+
+usign -V -m img.gz -P /etc/opkg/keys
+
+otb_info "Testing sysupgrade..."
+sysupgrade -T img.gz
+
+otb_info "Performing sysupgrade..."
+sysupgrade img.gz

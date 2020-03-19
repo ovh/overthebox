@@ -1,0 +1,28 @@
+#!/bin/sh
+# shellcheck disable=SC1091,SC2039
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+. /lib/functions.sh
+
+uci -q batch <<EOF
+delete network.none
+delete network.if6rd
+EOF
+
+_setup() {
+	local zone
+
+	case "$1" in
+		lan*) zone=lan ;;
+		wan*) zone=wan ;;
+		tun*) zone=tun ;;
+	esac
+
+	[ "$zone" ] && uci -q batch <<-EOF
+	del_list firewall.$zone.network=$1
+	add_list firewall.$zone.network=$1
+	EOF
+}
+
+config_load network
+config_foreach _setup interface

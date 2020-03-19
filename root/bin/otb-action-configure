@@ -1,0 +1,86 @@
+#!/bin/sh
+# shellcheck disable=SC1091
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+set -e
+
+ME=$(basename "$0")
+
+. /lib/overthebox
+
+[ "$OTB_SERVICE_ID" ]
+
+config=$(otb_device_get config)
+
+_get() {
+	otb_json_get "$config" "$1"
+}
+
+config_error=$(_get "error // empty")
+
+if [ "$config_error" ]; then
+	echo "$config_error" >&2
+	exit 1
+fi
+
+for conf in glorytun graph; do
+	true > /etc/config/"$conf"
+	uci -q revert "$conf"
+done
+
+uci -q show | sed -n "s/.generatedby='$ME'//p" | xargs -r -n 1 uci -q delete
+
+_setup_glorytun_mud() {
+	jq -r '@text "
+	set glorytun.\(.dev)=mud
+	set glorytun.\(.dev).enable=1
+	set glorytun.\(.dev).dev=\(.dev)
+	set glorytun.\(.dev).server=\(.server)
+	set glorytun.\(.dev).port=\(.port)
+	set glorytun.\(.dev).key=\(.key)
+
+	set network.\(.dev)=interface
+	set network.\(.dev).ifname=\(.dev)
+	set network.\(.dev).proto=static
+	set network.\(.dev).ipaddr=\(.ip_local)
+	set network.\(.dev).netmask=255.255.255.0
+	set network.\(.dev).gateway=\(.ip_peer)
+	set network.\(.dev).metric=\(.metric)
+	set network.\(.dev).ip4table=\(.table)
+	set network.\(.dev).txqueuelen=1000
+	set network.\(.dev).type=tunnel
+	set network.\(.dev).multipath=off
+	set network.\(.dev).generatedby='"$ME"'
+
+	set network.all6=route6
+	set network.all6.interface=\(.dev)
+	set network.all6.target=::/0
+	set network.all6.generatedby='"$ME"'
+
+	del_list firewall.tun.network=\(.dev)
+	add_list firewall.tun.network=\(.dev)
+
+	set firewall.accept_glorytun_wan=rule
+	set firewall.accept_glorytun_wan.name=accept_glorytun_wan
+	set firewall.accept_glorytun_wan.target=ACCEPT
+	set firewall.accept_glorytun_wan.src=wan
+	set firewall.accept_glorytun_wan.proto=udp
+	set firewall.accept_glorytun_wan.src_ip=\(.server)
+	set firewall.accept_glorytun_wan.src_port=\(.port)
+	"'
+}
+
+_get glorytun_mud_conf | _setup_glorytun_mud | uci -q batch
+
+uci -q batch <<EOF
+set system.@system[0].log_ip=$(_get log_conf.host)
+set system.@system[0].log_port=$(_get log_conf.port)
+set system.@system[0].log_proto=$(_get log_conf.protocol)
+set system.@system[0].log_prefix=$(_get log_conf.key)
+
+set graph.opentsdb=opentsdb
+set graph.opentsdb.url=$(_get graph_conf.host)
+set graph.opentsdb.freq=$(_get graph_conf.write_frequency)
+
+commit
+EOF

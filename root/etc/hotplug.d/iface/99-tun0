@@ -1,0 +1,10 @@
+#!/bin/sh
+
+[ "$DEVICE-$ACTION" = tun0-ifup ] || exit 0
+
+# Need to restart logs when tun is up so that all logs pass through the
+# encrypted tunnel
+/etc/init.d/log restart
+
+# Force cake on tun0
+tc qdisc replace root dev tun0 cake diffserv4

@@ -1,0 +1,37 @@
+#!/bin/sh
+# shellcheck disable=SC1091
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+uci -q batch <<-EOF
+set dhcp.@dnsmasq[0]=dnsmasq
+set dhcp.@dnsmasq[0].domainneeded='1'
+set dhcp.@dnsmasq[0].boguspriv='1'
+set dhcp.@dnsmasq[0].filterwin2k='0'
+set dhcp.@dnsmasq[0].localise_queries='1'
+set dhcp.@dnsmasq[0].rebind_protection='1'
+set dhcp.@dnsmasq[0].rebind_localhost='1'
+set dhcp.@dnsmasq[0].local='/lan/'
+set dhcp.@dnsmasq[0].domain='lan'
+set dhcp.@dnsmasq[0].expandhosts='1'
+set dhcp.@dnsmasq[0].nonegcache='0'
+set dhcp.@dnsmasq[0].authoritative='1'
+set dhcp.@dnsmasq[0].readethers='1'
+set dhcp.@dnsmasq[0].leasefile='/tmp/dhcp.leases'
+set dhcp.@dnsmasq[0].resolvfile='/tmp/resolv.conf.auto'
+set dhcp.@dnsmasq[0].localservice='1'
+set dhcp.@dnsmasq[0].cachesize='8192'
+set dhcp.@dnsmasq[0].quietdhcp='1'
+set dhcp.@dnsmasq[0].noresolv='0'
+
+delete dhcp.lan.ra
+delete dhcp.lan.ra_default
+delete dhcp.lan.ra_management
+delete dhcp.lan.ra_preference
+delete dhcp.lan.dhcpv6
+
+delete dhcp.@dnsmasq[0].server
+add_list dhcp.@dnsmasq[0].server='1.1.1.1'
+add_list dhcp.@dnsmasq[0].server='1.0.0.1'
+
+set dhcp.lan.force='1'
+EOF

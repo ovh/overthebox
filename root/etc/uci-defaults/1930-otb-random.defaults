@@ -1,0 +1,8 @@
+#!/bin/sh
+
+uci -q get system.@rngd[0] > /dev/null || uci -q add system rngd
+
+uci -q batch <<EOF
+set system.@rngd[0].enabled=1
+set system.@rngd[0].device=/dev/urandom
+EOF

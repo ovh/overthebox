@@ -1,0 +1,60 @@
+#!/bin/sh
+# shellcheck disable=SC1091
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+. /lib/functions/network.sh
+. /lib/overthebox
+
+_set_rule() {
+	iface=$1 action=$2
+	ip4table=$(uci -q get "network.$iface.ip4table")
+	[ "$ip4table" ] || return
+	ip rule "$action" lookup "$ip4table" pref $((30000+ip4table)) 2>/dev/null
+	[ "$action" = add ] && touch /tmp/tracker/connectivity
+}
+
+_track() {
+	iface=$1 action=del ipaddr=
+	network_get_ipaddr ipaddr "$iface"
+	[ "$ipaddr" ] && ping -w 5 -Q 184 -I "$ipaddr" -c 3 1.1.1.1 | \
+		grep -sq 'bytes from 1.1.1.1' && action=add >/dev/null
+	_set_rule "$iface" "$action"
+}
+
+path() {
+	status=$2 ip=$3 pubip=$5
+	[ "$pubip"  = "-"  ] && return
+	[ "$status" = "OK" ] && OK=OK
+	otb_set_data "$ip/pubip" "$pubip"
+	[ "$(otb_get_data "$ip/asnip")" = "$pubip" ] || (
+		asn=$(curl -sm 2 "api.iptoasn.com/v1/as/ip/$pubip")
+		[ "$asn" ] || return
+		otb_set_data "$ip/asnip" "$pubip"
+		otb_set_data "$ip/asn" "$asn"
+	) &
+}
+
+rm -rf /tmp/tracker
+mkdir -p /tmp/tracker
+
+glorytun path dev tun0 2>/dev/null | (
+	OK=
+	. /proc/self/fd/0
+	[ "$OK" ] && _track tun0 && touch /tmp/tracker/service
+)
+
+if [ ! -f /tmp/tracker/connectivity ]; then
+	_set_rule tun0 del
+	for iface in $(uci -q get "firewall.wan.network"); do
+		[ "$iface" = wan ] || ( _track "$iface" ) &
+	done
+fi
+wait
+
+for x in service connectivity; do
+	led=off
+	[ -f "/tmp/tracker/$x" ] && led=on
+	otb_led "$x" "$led"
+done
+
+[ -f /tmp/tracker/connectivity ]
