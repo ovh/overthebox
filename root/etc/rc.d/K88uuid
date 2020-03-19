@@ -40,14 +40,17 @@ for uevent in /sys/class/block/"$disk"*/uevent; do
 done
 [ "$part" ]
 
-logger -t "$0" "Update UUID of $disk"
+sync
+umount "/dev/$part" 2>/dev/null || true
 mount -t vfat -o rw,noatime "/dev/$part" /mnt
 
-dd if=/dev/urandom of="/dev/$disk" bs=1 count=4 seek=440 conv=notrunc 2>/dev/null || true
-sed -i "s/[a-fA-F0-9]\\{8\\}/$(_get_uuid "/dev/$disk")/g" /mnt/efi/boot/boot.nsh /mnt/boot/grub/grub.cfg
+logger -t "$0" "Update UUID of $disk"
 
-sync
-umount /mnt
+dd if=/dev/urandom of="/dev/$disk" bs=1 count=4 seek=440 conv=notrunc 2>/dev/null || true
+
+sed -i "s/[a-fA-F0-9]\\{8\\}/$(_get_uuid "/dev/$disk")/g" \
+	/mnt/efi/boot/boot.nsh /mnt/boot/grub/grub.cfg
+
 logger -t "$0" "Done"
 
 [ -f "$0" ] && rm -f "$0"
