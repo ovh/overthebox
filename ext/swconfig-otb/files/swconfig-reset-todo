@@ -1,0 +1,75 @@
+#!/bin/sh
+
+. /lib/functions.sh
+
+LAN=
+WAN=
+
+for port in $(seq 18); do
+	[ "$port" = 15 ] && continue
+	[ "$port" = 16 ] && continue
+	case " ${*:-"13 14"} " in
+		*" $port "*) [ -z "$WAN" ] && WAN=$port || WAN="$WAN $port" ;;
+		*)           [ -z "$LAN" ] && LAN=$port || LAN="$LAN $port" ;;
+	esac
+done
+
+[ -n "$LAN" ] || exit
+
+config_load network
+
+_delete_vlan() {
+	device=
+	config_get device "$1" device
+	[ "$device" = otbv2sw ] && uci -q delete "network.$1"
+}
+
+config_foreach _delete_vlan switch_vlan
+
+_delete_interface() {
+	case "$1" in
+		wan?*) uci -q delete "network.$1" ;;
+	esac
+}
+
+config_foreach _delete_interface interface
+
+uci -q batch >/dev/null <<-EOF
+add network switch_vlan
+set network.@switch_vlan[-1].device='otbv2sw'
+set network.@switch_vlan[-1].vlan='1'
+set network.@switch_vlan[-1].ports='16 15t'
+
+add network switch_vlan
+set network.@switch_vlan[-1].device='otbv2sw'
+set network.@switch_vlan[-1].vlan='2'
+set network.@switch_vlan[-1].ports='$LAN 15t'
+
+set network.lan.ifname='eth0.2'
+EOF
+
+vlan=3
+
+for port in $WAN; do
+	echo "Setup interface wan$port with vlan $vlan"
+
+	uci -q batch >/dev/null <<-EOF
+	add network switch_vlan
+	set network.@switch_vlan[-1].device='otbv2sw'
+	set network.@switch_vlan[-1].vlan='$vlan'
+	set network.@switch_vlan[-1].ports='$port 15t'
+
+	set network.wan$port=interface
+	set network.wan$port.ifname='eth0.$vlan'
+	set network.wan$port.multipath='on'
+	set network.wan$port.proto='dhcp'
+	set network.wan$port.metric='$port'
+	set network.wan$port.ip4table='$((200+port))'
+
+	del_list firewall.wan.network='wan$port'
+	add_list firewall.wan.network='wan$port'
+	EOF
+	vlan=$((vlan+1))
+done
+
+uci -q commit

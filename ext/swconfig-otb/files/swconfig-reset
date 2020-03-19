@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# shellcheck disable=SC1091
+. /lib/overthebox
+
+otb_todo reset-swconfig swconfig-reset-todo "$@" </dev/null

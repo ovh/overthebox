@@ -1,0 +1,72 @@
+#!/bin/sh
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+# shellcheck disable=SC1091
+. /lib/overthebox
+
+FILES=$(sysupgrade -l)
+
+_get_file_stat() {
+	filename=$1
+	local mode uid gid name isSymlink symlink content
+
+	# Stat
+	# %a  Access rights in octal
+	# %u  User ID
+	# %g  Group ID
+	stat="$(stat "$filename" -c "%a;%u;%g")"
+	mode=$(echo "$stat" | cut -d';' -f1)
+	uid=$(echo "$stat" | cut -d';' -f2)
+	gid=$(echo "$stat" | cut -d';' -f3)
+
+	# Check if the file is a symlink
+	if [ -L "$filename" ]; then
+		isSymlink="true"
+		symlink=$(readlink "$filename")
+		content=""
+	else
+		isSymlink="false"
+		symlink=""
+		content=$(cat "$filename")
+	fi
+
+	# shellcheck disable=SC2016
+	jq -n --arg filename "$filename" \
+		  --arg mode "$mode" \
+		  --arg uid "$uid" \
+		  --arg gid "$gid" \
+		  --arg isSymlink "$isSymlink" \
+		  --arg symlink "$symlink" \
+		  --arg content "$content" \
+		  '{
+			filename: $filename,
+			mode: $mode,
+			uid: $uid|tonumber,
+			gid: $gid|tonumber,
+			is_symlink: $isSymlink|contains("true"),
+			symlink: $symlink,
+			content: $content,
+		  }'
+}
+
+id=$(otb_json_get "$1" id)
+
+# shellcheck disable=SC2016
+create_backup_data=$(jq -n -c --arg id "$id" '{ device_action_id: $id }')
+
+# Create a new backup
+backup_info=$(otb_service_post "backups" --data "$create_backup_data")
+backup_id=$(otb_json_get "$backup_info" "backup_id")
+
+for file in $FILES; do
+	is_text=$(file -b "$file" | grep -E "text|symbolic")
+	if [ -n "$is_text" ]; then
+		otb_debug "Backing up $file"
+		json_data=$(_get_file_stat "$file")
+		echo "$file"
+		otb_service_post "backups/$backup_id" --data "$json_data"
+		echo
+	else
+		otb_debug "$file won't be backed up, this is not a text file"
+	fi
+done

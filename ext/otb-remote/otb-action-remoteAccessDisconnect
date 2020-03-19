@@ -1,0 +1,42 @@
+#!/bin/sh
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+set -e
+
+[ "$1" ]
+
+# shellcheck disable=SC1091
+. /lib/overthebox
+
+content="$1"
+
+_get() {
+	otb_json_get "$content" "arguments.$1"
+}
+
+remote_access_id="$(_get remote_access_id)"
+
+if [ -z "$remote_access_id" ] || [ "$remote_access_id" = "null" ]; then
+	echo "Invalid remote access ID"
+	exit 1
+fi
+
+otb_debug "Disconnect remote access $remote_access_id"
+
+uci_id=$(echo "$remote_access_id" | tr - _)
+luci_user=$(uci -q get "otb-remote.$uci_id.luci_user" || true)
+
+if [ -w /etc/dropbear/authorized_keys ]; then
+	sed -i "/$uci_id/d" /etc/dropbear/authorized_keys || true
+fi
+
+if [ "$luci_user" ]; then
+	deluser "$luci_user" || true
+fi
+
+uci -q batch <<EOF
+delete otb-remote.$uci_id
+commit otb-remote
+EOF
+
+/etc/init.d/otb-remote restart

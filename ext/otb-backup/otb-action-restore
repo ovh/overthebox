@@ -1,0 +1,11 @@
+#!/bin/sh
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+# shellcheck disable=SC1091
+. /lib/overthebox
+
+backup_id=$(otb_json_get "$1" "arguments.backup_id")
+
+otb_service_get "backups/$backup_id/tar" | sysupgrade --restore-backup -
+
+otb_debug "Done restauring backup $backup_id"
