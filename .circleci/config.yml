@@ -16,7 +16,7 @@ jobs:
           command: |
             sudo apt-get update
             sudo apt-get install -yq build-essential git unzip ncurses-dev libz-dev libssl-dev python subversion gettext gawk wget curl rsync perl
-            echo "cache 3 $OTB_TARGET" > /tmp/cache-target
+            echo "cache 4 $OTB_TARGET" > /tmp/cache-target
 
       - restore_cache:
           keys:
@@ -34,11 +34,11 @@ jobs:
           command: |
             OTB_PATH="$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/${CIRCLE_BRANCH:-$CIRCLE_TAG}"
             ssh -p ${OTB_RSYNC_PORT:-22} deploy@$OTB_HOST mkdir -p deploy/$OTB_PATH || true
-            rsync -av --delete-after -e "ssh -q -p ${OTB_RSYNC_PORT:-22}" source/bin/ deploy@$OTB_HOST:deploy/$OTB_PATH/ || true
-            rm -rf source/bin
+            rsync -av --delete-after -e "ssh -q -p ${OTB_RSYNC_PORT:-22}" openwrt/bin/ deploy@$OTB_HOST:deploy/$OTB_PATH/ || true
+            rm -rf openwrt/bin
 
       - save_cache:
           key: cache-{{ checksum "/tmp/cache-target" }}
           paths:
-            - "source"
+            - "openwrt"
             - "feeds"
