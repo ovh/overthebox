@@ -25,15 +25,18 @@ for iface in $(uci -q get firewall.lan.network); do
 	fi
 done
 
-# Automatically assign a DHCP interface to new devices
+# Automatically assign a DHCP interface to unknown devices
 
 for p in /sys/class/net/*; do
-	[ -d "$p/device" ] || continue
+	[ -d "$p/device"  ] || continue
 
 	ifname=$(basename "$p")
-	iface="${ifname}_dhcp"
-
 	uci -q show network | grep -s -q "$ifname" && continue
+
+	case "$ifname" in
+		eth*)  iface="wan$(echo "$ifname" | sed 's/eth//;s/\./_vlan/')" ;;
+		*)     iface="wan_$(echo "$ifname" | sed 's/wan//;s/\./_/')" ;;
+	esac
 
 	otb_info "create dhcp interface for $ifname"
 
