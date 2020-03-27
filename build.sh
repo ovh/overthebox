@@ -92,4 +92,7 @@ scripts/feeds install -d y $OTB_PKGS
 cp .config.keep .config
 
 make defconfig
-make "$@"
+if ! make "$@"; then
+	make "$@" -j1 V=s 2>&1 | tee error.log
+	exit 1
+fi
