@@ -1,0 +1,85 @@
+name: workflow-build-overthebox
+description: Build for OTB
+version: v2.0
+workflow:
+  fork-hook:
+    application: overthebox
+    payload:
+      git.author: ""
+      git.branch: master
+      git.hash: ""
+      git.hash.before: ""
+      git.message: ""
+      git.repository: "ovh/overthebox"
+      git.tag: ""
+  overthebox-build-x86_64:
+    depends_on:
+    - fork-hook
+    pipeline: overthebox-build
+    application: overthebox
+    environment: x86_64_build
+  overthebox-build-rpi3:
+    depends_on:
+    - fork-hook
+    pipeline: overthebox-build
+    application: overthebox
+    environment: rpi3_build
+  join_build:
+    depends_on:
+    - overthebox-build-x86_64
+    - overthebox-build-rpi3
+    when:
+    - success
+metadata:
+  default_tags: git.branch,git.author
+permissions:
+  compute.gra1: 5
+  OTB: 7
+notifications:
+- type: vcs
+  pipelines:
+  - overthebox-build-rpi3
+  - overthebox-build-x86_64
+  settings:
+    on_success: always
+    template:
+      body: |
+        [[- if .Stages ]]
+        CDS Report [[.WorkflowNodeName]]#[[.Number]].[[.SubNumber]] [[ if eq .Status "Success" -]] ✔ [[ else ]][[ if eq .Status "Fail" -]] ✘ [[ else ]][[ if eq .Status "Stopped" -]] ■ [[ else ]]- [[ end ]] [[ end ]] [[ end ]]
+        [[- range $s := .Stages]]
+        [[- if $s.RunJobs ]]
+        * [[$s.Name]]
+        [[- range $j := $s.RunJobs]]
+          * [[$j.Job.Action.Name]] 
+        [[- if eq $j.Status "Success" -]] ✔ [[ else ]] 
+        [[- if eq $j.Status "Fail" -]] ✘ 
+        Logs from the build x86_64
+        ``` 
+        {{.cds.build.logcontent-x86_64 | default "" | b64dec }}
+        ``` 
+        Logs from the build rpi3
+        ``` 
+        {{.cds.build.logcontent-rpi3 | default "" | b64dec }}
+        ``` 
+        [[ else ]]
+        [[- if eq $j.Status "Stopped" -]] ■ [[ else ]]- [[ end ]] [[ end ]] [[ end ]]
+        [[- end]]
+        [[- end]]
+        [[- end]]
+        [[- end]]
+
+        [[- if .Tests ]]
+        [[- if gt .Tests.TotalKO 0]]
+        Unit Tests Report
+
+        [[- range $ts := .Tests.TestSuites]]
+        * [[ $ts.Name ]]
+        [[range $tc := $ts.TestCases]]
+          [[- if or ($tc.Errors) ($tc.Failures) ]]  * [[ $tc.Name ]] ✘ [[- end]]
+        [[end]]
+        [[- end]]
+        [[- end]]
+        [[- end]]
+
+      disable_comment: false
+      disable_status: false
