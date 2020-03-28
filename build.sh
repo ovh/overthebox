@@ -12,7 +12,7 @@ OTB_VERSION="$(git describe --tag --always)"
 
 OTB_PKGS="jq curl ca-bundle ca-certificates otb-backup
 graph glorytun kmod-macvlan tc kmod-sched kmod-sched-cake
-otb-diagnostics otb-remote otb-luci ip-tiny usb-modeswitch
+otb-diagnostics otb-remote otb-web ip-tiny usb-modeswitch
 libimobiledevice usbmuxd iptables-mod-trace kmod-ipt-raw
 rng-tools conntrack conntrackd dnsmasq kmod-nf-nathelper
 kmod-nf-nathelper-extra comgt iperf3 vim-full netcat htop

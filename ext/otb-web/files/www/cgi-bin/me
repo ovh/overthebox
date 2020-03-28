@@ -1,0 +1,20 @@
+#!/bin/sh
+
+_error() {
+	printf "HTTP/1.0 %s\\r\\n" "$*"
+	exit 1
+}
+
+case "$REQUEST_METHOD" in
+	GET|HEAD) ;;
+	POST) otb-confirm-service "${REQUEST_URI##*/}" ;;
+	*) _error 405 Method Not Allowed ;;
+esac
+
+printf "Content-type: application/json\\n\\n"
+
+jq -n \
+	--arg service "$(uci -q get overthebox.me.service)" \
+	--arg device "$(uci -q get overthebox.me.device_id)" \
+	--arg version "$(cat /etc/otb-version)" \
+	'{ service: $service, device: $device, version: $version}'

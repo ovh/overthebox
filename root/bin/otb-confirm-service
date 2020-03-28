@@ -6,6 +6,8 @@ set -e
 
 . /lib/overthebox
 
+[ -z "$OTB_SERVICE_ID" ]
+
 case "$1" in
 overthebox.*-*-*-*-*)
 	OTB_SERVICE_ID="$1"
