@@ -3,4 +3,4 @@
 
 set -ex
 
-free -m
+cat /proc/meminfo
