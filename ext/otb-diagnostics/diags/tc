@@ -3,4 +3,4 @@
 
 set -ex
 
-tc qdisc show
+tc -s qdisc show
