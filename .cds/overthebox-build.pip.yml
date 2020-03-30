@@ -1,2 +1,28 @@
 version: v1.0
 name: overthebox-build
+jobs:
+- job: Build image
+  steps: 
+  - checkout: '{{.cds.workspace}}'
+  - optional: true
+    script: |
+      NB_PROC=$(cat /proc/cpuinfo | grep -i "^processor" | wc -l)
+      export OTB_TARGET={{ .cds.env.build_arch | default "x86_64" }}
+      export FORCE_UNSAFE_CONFIGURE=1
+      sh {{.cds.workspace}}/build.sh -j$NB_PROC 
+      tar cvf binary-$OTB_TARGET.tar.gz source/bin
+      worker export logcontent-$OTB_TARGET $( echo "Build ok" | base64 )
+  - always_executed: true
+    script: |
+      if [ -f source/build.log ]
+      then
+        BUILD_LOG=$(cat source/error.log | grep -i "error" | base64)
+        cat source/build.log
+      fi
+      worker export logcontent-{{ .cds.env.build_arch | default "x86_64" }} "$BUILD_LOG"
+  - artifactUpload:
+      path: '{{.cds.workspace}}/binary-{{ .cds.env.build_arch| default "x86_64" }}.tar.gz'
+      tag: '{{.cds.version}}'
+  requirements:
+  - model: compute.gra1/Debian10-GRA1-c2-60
+  - binary: git

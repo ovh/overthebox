@@ -5,13 +5,8 @@ workflow:
   fork-hook:
     application: overthebox
     payload:
-      git.author: ""
       git.branch: master
-      git.hash: ""
-      git.hash.before: ""
-      git.message: ""
       git.repository: "ovh/overthebox"
-      git.tag: ""
   overthebox-build-x86_64:
     depends_on:
     - fork-hook
@@ -24,12 +19,24 @@ workflow:
     pipeline: overthebox-build
     application: overthebox
     environment: rpi3_build
-  join_build:
+  join-post-build:
     depends_on:
     - overthebox-build-x86_64
     - overthebox-build-rpi3
     when:
     - success
+  Workflow:
+    depends_on:
+    - join-post-build
+    when:
+    - success
+    trigger: Workflow
+    config:
+      payload: "{\n\t\"overthebox.git.branch\": \"{{.git.branch}}\",\n\t\"overthebox.git.tag\":
+        \"{{.git.tag}}\",\n    \"overthebox.git.repository\": \"{{.git.repository}}\"\n}"
+      target_hook: "{{.cds.proj.otb-hook-uuid}}"
+      target_project: OTB
+      target_workflow: workflow-sign-deploy
 metadata:
   default_tags: git.branch,git.author
 permissions:
