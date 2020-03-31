@@ -16,7 +16,7 @@ jobs:
           command: |
             sudo apt-get update
             sudo apt-get install -yq build-essential git unzip ncurses-dev libz-dev libssl-dev python subversion gettext gawk wget curl rsync perl
-            echo "cache 5 $OTB_TARGET" > /tmp/cache-target
+            echo "cache 6 $OTB_TARGET" > /tmp/cache-target
 
       - restore_cache:
           keys:
@@ -40,5 +40,4 @@ jobs:
           key: cache-{{ checksum "/tmp/cache-target" }}
           paths:
             - "openwrt/dl"
-            - "openwrt/build_dir"
             - "openwrt/staging_dir"
