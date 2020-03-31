@@ -16,7 +16,7 @@ otb-diagnostics otb-remote otb-web ip-tiny usb-modeswitch
 libimobiledevice usbmuxd iptables-mod-trace kmod-ipt-raw
 rng-tools conntrack conntrackd dnsmasq kmod-nf-nathelper
 kmod-nf-nathelper-extra comgt iperf3 vim-tiny htop dmesg
-iputils-ping bmon bwm-ng screen mtr ss strace tcpdump-mini
+iputils-ping bmon bwm-ng screen mtr ss strace tcpdump
 ethtool sysstat pciutils mini_snmpd"
 
 case "$OTB_TARGET" in
