@@ -1,0 +1,43 @@
+#!/bin/sh
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+set -e
+
+[ "$1" ]
+
+# shellcheck disable=SC1091
+. /lib/overthebox
+
+content="$1"
+
+_get() {
+	otb_json_get "$content" "arguments.$1"
+}
+
+remote_access_id="$(_get remote_access_id)"
+
+if [ -z "$remote_access_id" ] || [ "$remote_access_id" = "null" ]; then
+	echo "Invalid remote access ID"
+	exit 1
+fi
+
+otb_debug "Connect remote access $remote_access_id"
+
+uci_id=$(echo "$remote_access_id" | tr - _)
+ip="$(_get ip)"
+port="$(_get port)"
+forwarded_port="$(_get forwarded_port)"
+server_public_key="$(_get server_public_key)"
+remote_public_key="$(_get remote_public_key)"
+
+uci -q batch <<EOF
+set otb-remote.${uci_id}=remote
+set otb-remote.${uci_id}.host='$ip'
+set otb-remote.${uci_id}.port='$port'
+set otb-remote.${uci_id}.forwarded_port='$forwarded_port'
+set otb-remote.${uci_id}.server_public_key='$server_public_key'
+set otb-remote.${uci_id}.remote_public_key='$remote_public_key'
+commit otb-remote
+EOF
+
+/etc/init.d/otb-remote restart

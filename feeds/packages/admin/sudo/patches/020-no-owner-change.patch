@@ -1,0 +1,11 @@
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -64,7 +64,7 @@ SHELL = @SHELL@
+ SED = @SED@
+ 
+ INSTALL = $(SHELL) $(top_srcdir)/install-sh -c
+-INSTALL_OWNER = -o $(install_uid) -g $(install_gid)
++INSTALL_OWNER =
+ 
+ ECHO_N = @ECHO_N@
+ ECHO_C = @ECHO_C@

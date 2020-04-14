@@ -1,0 +1,20 @@
+#!/bin/sh
+# shellcheck disable=SC1091
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+if ! uci -q get system.@system[0].zonename >/dev/null; then
+	uci -q batch <<-EOF
+	set system.@system[0].zonename="Europe/Paris"
+	set system.@system[0].timezone="CET-1CEST,M3.5.0,M10.5.0/3"
+	EOF
+fi
+
+uci -q set "system.@system[0].ttylogin=1"
+uci -q set "mini_snmpd.default.enabled=0"
+
+# Do not redirect http to https, allow both
+# overthebox.ovh will redirect to http for easier configuration
+uci -q set "uhttpd.main.redirect_https=0"
+
+# netifd will fail to reload the network if the file if not present
+touch /etc/config/wireless

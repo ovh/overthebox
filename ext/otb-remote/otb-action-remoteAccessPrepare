@@ -1,0 +1,52 @@
+#!/bin/sh
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+set -e
+
+[ "$1" ]
+
+# shellcheck disable=SC1091
+. /lib/overthebox
+
+content="$1"
+
+_get() {
+	otb_json_get "$content" "arguments.$1"
+}
+
+remote_access_id="$(_get remote_access_id)"
+
+if [ -z "$remote_access_id" ] || [ "$remote_access_id" = "null" ]; then
+	echo "Invalid remote access ID"
+	exit 1
+fi
+
+uci_id=$(echo "$remote_access_id" | tr - _)
+luci_user="$(_get luci_user)"
+luci_password="$(_get luci_password)"
+
+otb_debug "Prepare remote access $remote_access_id"
+
+if [ "$luci_user" != "null" ] && [ "$luci_password" != "null" ]; then
+	uci -q batch <<-EOF
+	set otb-remote.${uci_id}=remote
+	set otb-remote.${uci_id}.luci_user='$luci_user'
+	commit otb-remote
+	EOF
+
+	# Create the user
+	if [ "$luci_password" ]; then
+		otb_debug "Create luci user '$luci_user'"
+		adduser -G root -s /bin/false -H -D -h /tmp "$luci_user"
+		echo "$luci_user:$luci_password" | chpasswd
+	fi
+fi
+
+[ -s /etc/dropbear/dropbear_rsa_host_key ]
+
+pubkey=$(dropbearkey -y -f /etc/dropbear/dropbear_rsa_host_key | grep ssh-rsa)
+
+otb_debug "Send public key for remote access $remote_access_id"
+
+otb_device_post "remote_accesses/$remote_access_id/keys" \
+	--data "$(jq -n -c --arg pubkey "$pubkey" '{public_key: $pubkey}')"

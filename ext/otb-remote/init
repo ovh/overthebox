@@ -1,0 +1,68 @@
+#!/bin/sh /etc/rc.common
+# shellcheck disable=SC2039
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+# shellcheck disable=SC2034
+{
+	START=90
+	STOP=10
+	USE_PROCD=1
+}
+
+validate_section() {
+	uci_validate_section otb-remote remote "$1" \
+		'enable:bool:1'            \
+		'host:host'                \
+		'port:port'                \
+		'forwarded_port:port'      \
+		'server_public_key:string' \
+		'remote_public_key:string'
+}
+
+start_instance() {
+	local enable host port forwarded_port server_public_key remote_public_key
+
+	validate_section "$1" || return
+
+	[ "$enable" = "0" ] && return
+
+	[ "$host" ] || return
+	[ "$port" ] || return
+	[ "$forwarded_port" ] || return
+
+	[ "$server_public_key" ] || return
+	[ "$remote_public_key" ] || return
+
+	home="/tmp/otb-remote/$1"
+
+	(
+		dir="$home/.ssh"
+		auth="/etc/dropbear/authorized_keys"
+
+		umask 066
+		mkdir -p "$dir"
+
+		echo "$host ${server_public_key% *}" > "$dir/known_hosts"
+
+		[ "$remote_public_key" = "ssh-rsa dummyRsaKey" ] && exit
+		grep -sq "$1" "$auth" && exit
+		echo "$remote_public_key $1" >> "$auth"
+	)
+
+	procd_open_instance
+	procd_set_param command /usr/bin/ssh -l limited-user "$host" -p "$port" -N -R "6666:0.0.0.0:$forwarded_port" -K 30 -i /etc/dropbear/dropbear_rsa_host_key
+	procd_set_param respawn 0 10 0
+	procd_set_param stderr 1
+	procd_set_param user root
+	procd_set_param env "HOME=$home"
+	procd_close_instance
+}
+
+start_service() {
+	config_load otb-remote
+	config_foreach start_instance remote
+}
+
+service_triggers() {
+	procd_add_reload_trigger otb-remote
+}

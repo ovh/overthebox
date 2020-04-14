@@ -1,0 +1,147 @@
+# shellcheck disable=SC2034
+# vim: set ft=sh noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+OTB_TODO_DIR="/tmp/otb-todo"
+OTB_DATA_DIR="/tmp/otb-data"
+OTB_HEADERS_FILE="/tmp/otb-daemon-headers"
+OTB_CONFIG_CHECK_DIR="/usr/share/otb/config-check.d"
+OTB_PROVISIONING="provisionning.overthebox.net:4443"
+OTB_PROVISIONING_IP="213.186.33.11"
+
+mkdir -p "$OTB_DATA_DIR" "$OTB_TODO_DIR"
+
+otb_reload() {
+	[ -f /etc/config/overthebox ] || touch /etc/config/overthebox
+	OTB_DEVICE_ID=$(uci -q get overthebox.me.device_id || true)
+	OTB_SERVICE_ID=$(uci -q get overthebox.me.service || true)
+	OTB_TOKEN=$(uci -q get overthebox.me.token || true)
+	OTB_DEBUG=$(uci -q get overthebox.me.debug || true)
+}
+
+otb_reload
+
+otb_alert() {
+	logger -t otb -p 1 "$*" || true
+}
+
+otb_crit() {
+	logger -t otb -p 2 "$*" || true
+}
+
+otb_err() {
+	logger -t otb -p 3 "$*" || true
+}
+
+otb_warn() {
+	logger -t otb -p 4 "$*" || true
+}
+
+otb_notice() {
+	logger -t otb -p 5 "$*" || true
+}
+
+otb_info() {
+	logger -t otb -p 6 "$*" || true
+}
+
+otb_debug()  {
+	[ "$OTB_DEBUG" ] || return 0
+	logger -t otb -p 7 "$*" || true
+}
+
+otb_pretty_print() {
+	jq -e -n --argjson output "$1" "\$output" 2>/dev/null || echo "$1"
+}
+
+otb_json_get() {
+	jq -r -n --argjson content "$1" "\$content.$2"
+}
+
+otb_call() {
+	method=$1
+	path=$2
+	shift 2
+	otb_debug "call: $method $path $*"
+	curl --silent --show-error --max-time 5 \
+		-X "$method" \
+		-H "Content-Type: application/json" \
+		-H "X-Auth-OVH: $OTB_TOKEN" \
+		-H "X-Overthebox-Version: $(cat /etc/otb-version || echo 0.0-0)" \
+		"https://$OTB_PROVISIONING/$path" \
+		--resolve "$OTB_PROVISIONING:$OTB_PROVISIONING_IP" \
+		"$@"
+}
+
+otb_device_post() {
+	subpath=$1
+	shift 1
+	[ "$OTB_DEVICE_ID" ] && otb_call POST "devices/$OTB_DEVICE_ID/$subpath" "$@"
+}
+
+otb_device_get() {
+	subpath=$1
+	shift 1
+	[ "$OTB_DEVICE_ID" ] && otb_call GET "devices/$OTB_DEVICE_ID/$subpath" "$@"
+}
+
+otb_service_post() {
+	subpath=$1
+	shift 1
+	[ "$OTB_SERVICE_ID" ] && otb_device_post "service/$OTB_SERVICE_ID/$subpath" "$@"
+}
+
+otb_service_get() {
+	subpath=$1
+	shift 1
+	[ "$OTB_SERVICE_ID" ] && otb_device_get "service/$OTB_SERVICE_ID/$subpath" "$@"
+}
+
+otb_todo() {
+	todo=$1
+	shift 1
+	mkdir -p "$OTB_TODO_DIR"
+	[ "$todo" ] && rm -rf "$OTB_TODO_DIR/"*"-$todo"
+	(echo "$* <<EOF"; cat -; echo EOF) > "$OTB_TODO_DIR/$(date +%s%N)-$todo"
+}
+
+otb_todo_wild_clean() {
+	todo=$1
+	shift 1
+	[ "$todo" ] && rm -rf "$OTB_TODO_DIR/"*-"$todo"-*
+}
+
+otb_set_data() {
+	mkdir -p "$(dirname "$OTB_DATA_DIR/$1")"
+	echo "$2" > "$OTB_DATA_DIR/$1"
+}
+
+otb_unset_data() {
+	rm -f "$OTB_DATA_DIR/$1"
+}
+
+otb_get_data() {
+	[ -f "$OTB_DATA_DIR/$1" ] || return 0
+	cat "$OTB_DATA_DIR/$1"
+}
+
+otb_save_event() {
+	name=$1
+	details=$2
+	filename=${3:-$1}
+	[ "$details" ] || details="{}"
+	jq -n -c --arg name "$name" --arg timestamp "$(date +%s)" --argjson details "$details" \
+		'{event_name: $name, timestamp: $timestamp|tonumber, details: $details}' \
+		| otb_todo "event-$filename" otb_device_post events -d@-
+}
+
+otb_led() {
+	sysfs=$(uci -q get "system.$1_led.sysfs")
+	[ "$sysfs" ] || return 0
+	# shellcheck disable=SC1091
+	. /lib/functions/leds.sh
+	case "$2" in
+		on) led_on "$sysfs" ;;
+		off) led_off "$sysfs" ;;
+		blink) led_timer "$sysfs" "500" "500" ;;
+	esac
+}
