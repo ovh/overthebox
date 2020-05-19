@@ -26,7 +26,7 @@ jobs:
           name: Build
           no_output_timeout: 30m
           command: |
-            export OTB_PATH="$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/${CIRCLE_BRANCH:-$CIRCLE_TAG}"
+            export OTB_REPO="http://$OTB_HOST:$OTB_PORT/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/${CIRCLE_BRANCH:-$CIRCLE_TAG}"
             sh build.sh -j2
 
       - run:
