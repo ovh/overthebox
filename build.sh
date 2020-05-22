@@ -60,6 +60,9 @@ CONFIG_VERSION_DIST="OverTheBox"
 CONFIG_VERSION_NUMBER="$OTB_VERSION"
 CONFIG_VERSION_CODE="v$(cat root/etc/otb-version)"
 CONFIG_VERSION_REPO="$OTB_REPO"
+CONFIG_VERSION_HOME_URL="https://github.com/ovh/overthebox"
+CONFIG_VERSION_BUG_URL="https://github.com/ovh/overthebox/issues"
+CONFIG_VERSION_SUPPORT_URL="https://community.ovh.com/c/telecom/overthebox"
 $(for i in otb $OTB_PKGS; do echo "CONFIG_PACKAGE_$i=y"; done)
 EOF
 
