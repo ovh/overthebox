@@ -17,7 +17,7 @@ libimobiledevice usbmuxd iptables-mod-trace kmod-ipt-raw
 rng-tools conntrack conntrackd dnsmasq kmod-nf-nathelper
 kmod-nf-nathelper-extra comgt iperf3 vim htop dmesg
 iputils-ping bmon bwm-ng screen mtr ss strace tcpdump
-ethtool sysstat pciutils mini_snmpd"
+ethtool sysstat pciutils mini_snmpd libustream-mbedtls"
 
 case "$OTB_TARGET" in
 	x86_64)
