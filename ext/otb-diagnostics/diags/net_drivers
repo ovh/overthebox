@@ -1,0 +1,11 @@
+#!/bin/sh
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+set -e
+
+for p in /sys/class/net/*/device/driver; do
+	[ -e "$p" ] || continue
+	_name=$(echo "$p" | cut -d/ -f5)
+	_link=$(set -x; readlink -f "$p")
+	echo "$_name: $_link"
+done

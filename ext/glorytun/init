@@ -1,0 +1,75 @@
+#!/bin/sh /etc/rc.common
+# shellcheck disable=SC2039
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+# shellcheck disable=SC2034
+{
+	START=90
+	STOP=10
+	USE_PROCD=1
+}
+
+PROG_NAME=glorytun
+PROG=/usr/sbin/$PROG_NAME
+
+_log() {
+	logger -p daemon.info -t $PROG_NAME "$@"
+}
+
+_err() {
+	logger -p daemon.err -t $PROG_NAME "$@"
+}
+
+validate_section() {
+	uci_validate_section glorytun mud "$1" \
+		'enable:bool:0'        \
+		'key:string'           \
+		'server:host'          \
+		'port:port'            \
+		'dev:string'
+}
+
+start_instance() {
+	local enable key server port dev
+
+	validate_section "$1" || {
+		_err "validation failed"
+		return 1
+	}
+
+	[ "$enable" = "1" ] || return
+	[ "$key"    ] || return
+	[ "$server" ] || return
+	[ "$port"   ] || return
+
+	keyfile="/tmp/$PROG_NAME.key"
+	( umask 077; echo "$key" > "$keyfile" )
+	key=""
+
+	_log "starting $PROG_NAME instance $*"
+
+	procd_open_instance
+
+	procd_set_param command $PROG \
+		bind "0.0.0.0" "$port" \
+		to "$server" "$port" \
+		keyfile "$keyfile" \
+		${dev:+dev "$dev"}
+
+	procd_set_param respawn 0 30 0
+	procd_set_param file "$keyfile"
+
+	procd_set_param stdout 1
+	procd_set_param stderr 1
+
+	procd_close_instance
+}
+
+start_service() {
+	config_load glorytun
+	config_foreach start_instance mud
+}
+
+service_triggers() {
+	procd_add_reload_trigger glorytun
+}

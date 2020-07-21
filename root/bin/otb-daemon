@@ -1,0 +1,76 @@
+#!/bin/sh
+# shellcheck disable=SC1090,SC1091
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+. /lib/overthebox
+
+otb_save_event start
+otb_todo refresh otb-action-refreshProperties </dev/null
+
+OTB_WAIT=
+
+_run() {
+	otb_reload
+	otb-check-config
+
+	if ! otb-tracker; then
+		sleep 10
+		return
+	fi
+
+	if [ -z "$OTB_DEVICE_ID" ]; then
+		otb-subscribe
+		otb_reload
+	fi
+
+	# Handle todos
+	for file in "$OTB_TODO_DIR"/*; do
+		[ -f "$file" ] && (. "$file") && rm -f "$file"
+	done
+
+	[ "$OTB_WAIT" ] && [ "$OTB_WAIT" -gt "$(date +%s)" ] && return
+
+	ret=$(otb_device_get actions --dump-header "$OTB_HEADERS_FILE") || return
+	read -r LINE < "$OTB_HEADERS_FILE"
+	case "$LINE" in
+		"HTTP"*"200"*) ;;
+		"HTTP"*"401"*)
+			otb_err "Got 401"
+			# Resubscribe if we don't have a service ID
+			# We shouldn't have to check that, but you never know,
+			# because resubscribing a device already linked to
+			# service would break it irrevocably
+			[ "$OTB_SERVICE_ID" ] || otb-subscribe
+			return ;;
+		*)
+			return ;;
+	esac
+
+	action=$(otb_json_get "$ret" action)
+	id=$(otb_json_get "$ret" id)
+	otb_debug "Got action '$action' with id '$id'"
+
+	case "$action" in
+		"wait")
+			OTB_WAIT="$((30+$(date +%s)))"
+			return ;; # id is null so we can return now
+		"null"|"")
+			return ;;
+	esac
+
+	status="error"
+	details=$(otb-action-"$action" "$ret" 2>&1) && status="done"
+	otb_debug "Got status '$status' for action '$action'"
+
+	[ "$id" ] && [ "$id" != "null" ] && \
+		jq -c -n --arg status "$status" --arg details "$details" \
+			'{status: $status, details: $details}' | otb_device_post "actions/$id" -d@-
+}
+
+RUNNING=1
+trap 'RUNNING=' INT QUIT TERM
+
+while [ "$RUNNING" ]; do
+	sleep 1
+	_run
+done

@@ -1,0 +1,7 @@
+#!/bin/sh
+# shellcheck disable=SC1091
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+. /lib/overthebox
+
+otb_save_event "first-setup"

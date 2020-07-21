@@ -1,0 +1,11 @@
+#!/bin/sh
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+cat > /etc/opkg/keys/6bc78405bb9b7cc3 <<EOF
+untrusted comment: OTB build key
+RWRrx4QFu5t8wxTWDz+ErjM4vJhhhPzPvEJqaheYtgQXZuFSa+ndn91U
+EOF
+
+uci -q set "network.lan.type=bridge"
+uci -q set 'network.lan.ipaddr=192.168.100.1'
+uci -q set 'system.@system[0].hostname=OverTheBox'

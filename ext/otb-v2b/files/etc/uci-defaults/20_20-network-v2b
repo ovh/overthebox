@@ -1,0 +1,42 @@
+#!/bin/sh
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+case "$(cat /tmp/sysinfo/board_name)" in
+	*overthebox-v2b) ;;
+	*) return 0
+esac 2>/dev/null
+
+[ "$(uci -q get "network.@switch[0]")" = switch ] && return
+
+otb_set_switch() {
+	sw=$(uci -q add network switch)
+	dev=$1; shift 1
+	uci -q batch <<-EOF
+	set network.$sw.name='$dev'
+	set network.$sw.reset='1'
+	set network.$sw.enable_vlan='1'
+	EOF
+	vlan=2
+	for args in "$@"; do
+		n=${args%% *}
+		case "$n" in
+			lan*) proto=static ;;
+			wan*) proto=dhcp ;;
+		esac
+		v=$(uci -q add network switch_vlan)
+		uci -q batch <<-EOF
+		set network.$n=interface
+		set network.$n.ifname='eth0.$vlan'
+		set network.$n.proto='$proto'
+		set network.$v.device='$dev'
+		set network.$v.vlan='$vlan'
+		set network.$v.ports='${args#* }'
+		EOF
+		vlan=$((vlan+1))
+	done
+}
+
+otb_set_switch otbv2sw \
+	"lan 1 2 3 4 5 6 7 8 9 10 11 12 17 18 15t" \
+	"wan1 13 15t" \
+	"wan2 14 15t"

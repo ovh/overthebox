@@ -1,0 +1,45 @@
+#!/bin/sh
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+# shellcheck disable=SC1091
+. /lib/overthebox
+
+BIN_PATH=/usr/share/otb/diagnostics.d
+cd "$BIN_PATH" || exit 1
+
+id=$(otb_json_get "$1" id)
+
+# Get the diags from the arguments
+DIAGS=$(otb_json_get "$1" "arguments.diags[]?")
+# If no argument is given, fallback to the diag directory
+[ -z "$DIAGS" ] && DIAGS=$(find -type f -perm 755)
+
+# shellcheck disable=SC2016
+create_diag_data=$(jq -n -c --arg id "$id" '{ device_action_id: $id }')
+
+# Create a new empty diag
+diag_info=$(otb_device_post diagnostics --data "$create_diag_data")
+diag_id=$(otb_json_get "$diag_info" "diagnostic_id")
+
+
+for diag in $DIAGS; do
+	bin=$(readlink -f "${BIN_PATH}/${diag}")
+	otb_debug "Calling $diag with from $bin"
+	output=$("$bin" 2>&1)
+	exit_code=$?;
+	# shellcheck disable=SC2016
+	post_data=$(jq -n -c --arg output "$output" \
+						 --arg cmd "$bin" \
+						 --arg name "$diag" \
+						 --arg exit_code "$exit_code" \
+						 '{
+							name: $name,
+							cmd: $cmd,
+							exit_code: $exit_code|tonumber,
+							output: $output,
+						 }')
+
+	echo "$diag"
+	otb_device_post "diagnostics/$diag_id" --data "$post_data"
+	echo
+done

@@ -1,0 +1,10 @@
+#!/bin/sh
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+# shellcheck disable=SC1091
+. /lib/overthebox
+
+details=$(jq -n -c --arg interface "$INTERFACE" --arg device "$DEVICE" \
+	'{ interface: $interface, device: $device }')
+
+otb_save_event "$ACTION" "$details" "$ACTION-$INTERFACE"

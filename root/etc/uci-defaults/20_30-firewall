@@ -1,0 +1,76 @@
+#!/bin/sh
+# shellcheck disable=SC1091,SC2039
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+. /lib/functions.sh
+
+uci -q batch <<EOF
+set firewall.tun=zone
+set firewall.tun.name=tun
+set firewall.tun.input=REJECT
+set firewall.tun.output=ACCEPT
+set firewall.tun.forward=REJECT
+set firewall.tun.masq=1
+set firewall.tun.mtu_fix=1
+EOF
+
+_setup() {
+	local name network
+	config_get name "$1" name
+	config_get network "$1" network
+
+	case "$name" in
+	lan|wan|tun)
+		for iface in $network; do
+			if [ "$(uci -q get "network.$iface")" ]; then
+				case "$iface" in
+					"$name"*) ;;
+					lan*|wan*|tun*) uci -q del_list "firewall.$1.network=$iface" ;;
+				esac
+			else
+				uci -q del_list "firewall.$1.network=$iface"
+			fi
+		done
+		uci -q rename "firewall.$1=$name"
+		;;
+	esac
+}
+
+config_load firewall
+config_foreach _setup zone
+
+uci -q batch <<-EOF
+set firewall.allow_dhcp_request=rule
+set firewall.allow_dhcp_request.name=Allow-DHCP-Request
+set firewall.allow_dhcp_request.src=wan
+set firewall.allow_dhcp_request.proto=udp
+set firewall.allow_dhcp_request.dest_port=67
+set firewall.allow_dhcp_request.target=ACCEPT
+set firewall.allow_dhcp_request.family=ipv4
+
+del_list firewall.wan.masq_dest='!10.0.0.0/8'
+del_list firewall.wan.masq_dest='!172.16.0.0/12'
+del_list firewall.wan.masq_dest='!192.168.0.0/16'
+del_list firewall.wan.masq_src='!151.127.0.0/16'
+del_list firewall.wan.masq_src='!109.190.0.0/16'
+
+del_list firewall.tun.masq_dest='!10.0.0.0/8'
+del_list firewall.tun.masq_dest='!172.16.0.0/12'
+del_list firewall.tun.masq_dest='!192.168.0.0/16'
+del_list firewall.tun.masq_src='!151.127.0.0/16'
+del_list firewall.tun.masq_src='!109.190.0.0/16'
+
+add_list firewall.tun.masq_dest='!10.0.0.0/8'
+add_list firewall.tun.masq_dest='!172.16.0.0/12'
+add_list firewall.tun.masq_dest='!192.168.0.0/16'
+add_list firewall.tun.masq_src='!151.127.0.0/16'
+add_list firewall.tun.masq_src='!109.190.0.0/16'
+
+set firewall.lan_tun=forwarding
+set firewall.lan_tun.src=lan
+set firewall.lan_tun.dest=tun
+
+set firewall.tun_lan=forwarding
+set firewall.tun_lan.src=tun
+set firewall.tun_lan.dest=lan
+EOF

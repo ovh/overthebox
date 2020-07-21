@@ -1,0 +1,23 @@
+#!/bin/sh
+# shellcheck disable=SC1091
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+set -e
+
+. /lib/overthebox
+
+[ -z "$OTB_SERVICE_ID" ]
+
+case "$1" in
+overthebox.*-*-*-*-*)
+	OTB_SERVICE_ID="$1"
+	if [ "$(otb_service_post confirm)" = "OK" ]; then
+		uci -q batch <<-EOF
+		set overthebox.me.service=$OTB_SERVICE_ID
+		commit overthebox
+		EOF
+		exit
+	fi ;;
+esac
+
+exit 1

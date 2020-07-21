@@ -1,0 +1,16 @@
+#!/bin/sh
+# shellcheck disable=SC1091
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+[ -z "$1" ] && exit 1
+
+. /lib/overthebox
+
+name=$(basename "$0")
+services=$(otb_json_get "$1" "arguments.services[]?")
+
+for service in $services; do
+    echo "restarting $service"
+    otb_info "$name : restarting $service"
+    "/etc/init.d/$service" restart
+done

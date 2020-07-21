@@ -1,0 +1,25 @@
+#!/bin/sh
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+board="$(cat /tmp/sysinfo/board_name)" 2>/dev/null
+
+case "$board" in
+	pc-engines-apu*)
+		uci -q batch <<-EOF
+		set system.power_led=led
+		set system.power_led.trigger='none'
+		set system.power_led.default='1'
+		set system.power_led.sysfs='apu2:green:power'
+
+		set system.connectivity_led=led
+		set system.connectivity_led.trigger='none'
+		set system.connectivity_led.default='0'
+		set system.connectivity_led.sysfs='apu2:green:led2'
+
+		set system.service_led=led
+		set system.service_led.trigger='none'
+		set system.service_led.default='0'
+		set system.service_led.sysfs='apu2:green:led3'
+		EOF
+		;;
+esac

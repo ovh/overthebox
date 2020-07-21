@@ -1,0 +1,12 @@
+#!/bin/sh
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+if [ "$(uci -q get "network.if0")" = interface ]; then
+	logger -t update -p 6 "Rename if0 to wan"
+	uci -q batch <<-EOF
+	rename network.if0=wan
+	rename network.if0_dev=wan_dev
+	set network.wan.ifname=wan
+	set network.wan_dev.name=wan
+	EOF
+fi

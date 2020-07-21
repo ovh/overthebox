@@ -1,0 +1,12 @@
+#!/bin/sh
+# shellcheck disable=SC1091
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+set -e
+set -o pipefail
+
+. /lib/overthebox
+. /etc/os-release
+
+otb_device_get release_channel | jq -r '.feeds[] | [.type,.name,.url] | join(" ")' | \
+	sed "s^@ARCH@^$LEDE_ARCH^; s^@BOARD@^$LEDE_BOARD^" > /etc/opkg/distfeeds.conf

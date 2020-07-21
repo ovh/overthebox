@@ -1,0 +1,8 @@
+#!/bin/sh
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+set -ex
+
+glorytun show
+glorytun path
+glorytun version

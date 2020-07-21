@@ -1,0 +1,66 @@
+#!/bin/sh
+# shellcheck disable=SC1091
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+# hack to live in harmony with otb-daemon
+ME=otb-action-configure
+
+true > /etc/config/glorytun
+uci -q revert glorytun
+
+uci -q show | sed -n "s/.generatedby='$ME'//p" | xargs -r -n 1 uci -q delete
+
+_ask() {
+	printf "%s: " "$1"
+	read -r "$2"
+}
+
+_PORT=5006
+_IP_LOCAL=10.166.179.2
+_IP_PEER=10.166.179.1
+
+_ask "Server IP" SERVER
+_ask "Server port ($_PORT)" PORT
+_ask "Server key" KEY
+_ask "Tunnel local IP ($_IP_LOCAL)" IP_LOCAL
+_ask "Tunnel peer IP ($_IP_PEER)" IP_PEER
+
+uci -q batch <<EOF
+set glorytun.tun0=mud
+set glorytun.tun0.enable=1
+set glorytun.tun0.dev=tun0
+set glorytun.tun0.server=$SERVER
+set glorytun.tun0.port=${PORT:-$_PORT}
+set glorytun.tun0.key=$KEY
+
+set network.tun0=interface
+set network.tun0.ifname=tun0
+set network.tun0.proto=static
+set network.tun0.ipaddr=${IP_LOCAL:-$_IP_LOCAL}
+set network.tun0.netmask=255.255.255.0
+set network.tun0.gateway=${IP_PEER:-$_IP_PEER}
+set network.tun0.metric=1100
+set network.tun0.ip4table=100
+set network.tun0.txqueuelen=1000
+set network.tun0.type=tunnel
+set network.tun0.multipath=off
+set network.tun0.generatedby=$ME
+
+set network.all6=route6
+set network.all6.interface=tun0
+set network.all6.target=::/0
+set network.all6.generatedby=$ME
+
+del_list firewall.tun.network=tun0
+add_list firewall.tun.network=tun0
+
+set firewall.accept_glorytun_wan=rule
+set firewall.accept_glorytun_wan.name=accept_glorytun_wan
+set firewall.accept_glorytun_wan.target=ACCEPT
+set firewall.accept_glorytun_wan.src=wan
+set firewall.accept_glorytun_wan.proto=udp
+set firewall.accept_glorytun_wan.src_ip=$SERVER
+set firewall.accept_glorytun_wan.src_port=${PORT:-$_PORT}
+
+commit
+EOF
