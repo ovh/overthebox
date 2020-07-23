@@ -10,9 +10,10 @@ OTB_TARGET=${OTB_TARGET:-x86_64}
 OTB_CONFIG=${OTB_CONFIG:-nice-bb usb-full legacy}
 OTB_VERSION="$(git describe --tag --always)"
 
+#otb-diagnostics otb-remote luci-mod-admin-full luci-theme-bootstrap uhttpd ip-tiny usb-modeswitch
 OTB_PKGS="jq curl ca-bundle ca-certificates otb-backup
 graph glorytun kmod-macvlan tc kmod-sched kmod-sched-cake
-otb-diagnostics otb-remote otb-web ip-tiny usb-modeswitch
+otb-diagnostics otb-remote otb-luci otb-luci-swconfig luci-compat ip-tiny usb-modeswitch
 libimobiledevice usbmuxd iptables-mod-trace kmod-ipt-raw
 rng-tools conntrack conntrackd dnsmasq kmod-nf-nathelper
 kmod-nf-nathelper-extra comgt iperf3 vim htop dmesg
