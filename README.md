@@ -55,17 +55,17 @@ cd overthebox
 ```
 
 The script `build.sh` accepts all `make` arguments (like `-j`).
-When finished, files are located in the directory `source/bin`.
+When finished, files are located in the directory `openwrt/bin`.
 
 ### Custom arch build
 
 By default the build script will create the packages for the `x86_64` architecture.
-You can specify a custom build target by adding a `OTB_TARGET` environment variable to the build and the corresponding `config/$OTB_TARGET` file.
+You can specify a custom build target by adding a `OTB_ARCH` environment variable to the build and the corresponding `config/$OTB_ARCH` file.
 
 To build the project for the raspberry pi 3:
 
 ```sh
-OTB_TARGET="rpi3" ./build.sh
+OTB_ARCH="rpi3" ./build.sh
 ```
 
 ## Create a recovery key

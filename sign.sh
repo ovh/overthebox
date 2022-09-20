@@ -2,7 +2,7 @@
 
 key=${1:-key-build}
 
-[ -d source/bin ] && [ -f "$key" ] && \
-	find source/bin \
+[ -d openwrt/bin ] && [ -f "$key" ] && \
+	find openwrt/bin \
 	\( -name '*.img.gz' -or -name 'Packages' \) \
-	-exec source/staging_dir/host/bin/usign -S -m {} -s "$key" \;
+	-exec openwrt/staging_dir/host/bin/usign -S -m {} -s "$key" \;
