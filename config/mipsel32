@@ -1,3 +1,0 @@
-CONFIG_TARGET_malta=y
-CONFIG_TARGET_malta_le=y
-CONFIG_TARGET_malta_le_Default=y
