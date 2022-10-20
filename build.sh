@@ -8,7 +8,13 @@ unset GREP_OPTIONS SED
 OTB_REPO=${OTB_REPO:-LOCAL}
 OTB_ARCH=${OTB_ARCH:-x86_64}
 OTB_CONFIG=${OTB_CONFIG:-net-full nice-bb usb-full legacy}
-OTB_PKGS=${OTB_PKGS:-vim-full netcat htop iputils-ping bmon bwm-ng screen mtr ss strace tcpdump-mini ethtool sysstat pciutils mini_snmpd dmesg}
+OTB_PKGS=${OTB_PKGS:-vim-full netcat htop iputils-ping bmon bwm-ng screen mtr ss strace tcpdump-mini ethtool sysstat pciutils mini_snmpd dmesg nano}
+
+# Optionnal package
+OTB_PKGS_M="prometheus-node-exporter-lua prometheus-node-exporter-lua-nat_traffic
+prometheus-node-exporter-lua-netstat prometheus-node-exporter-lua-openwrt
+prometheus-node-exporter-lua-textfile prometheus-node-exporter-lua-wifi
+prometheus-node-exporter-lua-wifi_stations"
 
 for i in $OTB_ARCH $OTB_CONFIG; do
 	if [ ! -f "config/$i" ]; then
@@ -18,7 +24,10 @@ for i in $OTB_ARCH $OTB_CONFIG; do
 done
 
 # Fetch submodule
-git submodule update --init --recursive
+git submodule sync
+git submodule update --init --recursive --remote
+
+echo "submodule status :\n$(git submodule status)"
 
 # Get Version
 OTB_VERSION=${OTB_VERSION:=$(git describe --tag --always)}
@@ -55,6 +64,7 @@ CONFIG_VERSION_HOME_URL="https://github.com/ovh/overthebox"
 CONFIG_VERSION_BUG_URL="https://github.com/ovh/overthebox/issues"
 CONFIG_VERSION_SUPPORT_URL="https://community.ovh.com/c/telecom/overthebox"
 $(for i in otb $OTB_PKGS; do echo "CONFIG_PACKAGE_$i=y"; done)
+$(for i in $OTB_PKGS_M; do echo "CONFIG_PACKAGE_$i=m"; done)
 EOF
 
 echo "Building for arch $OTB_ARCH"
@@ -67,6 +77,7 @@ scripts/feeds update -a
 scripts/feeds install -a -d y -f -p overthebox
 # shellcheck disable=SC2086
 scripts/feeds install -d y $OTB_PKGS
+scripts/feeds install -d m $OTB_PKGS_M
 cp .config.keep .config
 
 make defconfig
