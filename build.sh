@@ -22,9 +22,9 @@ for i in $OTB_ARCH $OTB_CONFIG; do
 	fi
 done
 
-# Fetch submodule
+# Fetch last overthebox-feeds
 git submodule sync
-git submodule update --init --recursive --remote
+git submodule update --init --recursive --remote feeds/overthebox
 
 echo "submodule status :\n$(git submodule status)"
 
