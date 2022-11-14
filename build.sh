@@ -6,15 +6,10 @@ umask 0022
 unset GREP_OPTIONS SED
 
 OTB_ARCH=${OTB_ARCH:-x86_64}
-OTB_CONFIG=${OTB_CONFIG:-net-full nice-bb usb-full legacy}
-OTB_PKGS=${OTB_PKGS:-vim-full netcat htop iputils-ping bmon bwm-ng screen mtr ss strace tcpdump-mini ethtool sysstat pciutils mini_snmpd dmesg nano fuse-utils gdb rsync}
 
-# Optionnal package
-OTB_PKGS_M="prometheus-node-exporter-lua prometheus-node-exporter-lua-nat_traffic
-prometheus-node-exporter-lua-netstat prometheus-node-exporter-lua-openwrt
-prometheus-node-exporter-lua-textfile prometheus-node-exporter-lua-wifi
-prometheus-node-exporter-lua-wifi_stations"
 OTB_CONFIG_FILES=${OTB_CONFIG_FILES:-image_common image_busybox kmod_common kmod_network kmod_usb "arch_${OTB_ARCH}"}
+OTB_PKGS_INCLUDE=$(cat "config/package_include")
+OTB_PKGS_OPTIONNAL=$(cat "config/package_optionnal")
 
 for i in $OTB_CONFIG_FILES; do
 	if [ ! -f "config/$i" ]; then
@@ -27,7 +22,7 @@ done
 git submodule sync
 git submodule update --init --recursive --remote feeds/overthebox
 
-printf "submodule status :\n%s\n", "$(git submodule status)"
+printf "submodule status :\n%s\n" "$(git submodule status)"
 
 # CONFIG_VERSION parameters
 OTB_VERSION_SYSTEM=${OTB_VERSION_SYSTEM:=$(git describe --tag --always)}
@@ -79,8 +74,8 @@ CONFIG_VERSION_MANUFACTURER_URL="$OTB_VERSION_MANUFACTURER_URL"
 CONFIG_VERSION_MANUFACTURER="$OTB_VERSION_MANUFACTURER"
 CONFIG_KERNEL_BUILD_DOMAIN="$OTB_KERNEL_BUILD_DOMAIN"
 CONFIG_KERNEL_BUILD_USER="$OTB_KERNEL_BUILD_USER"
-$(for i in otb $OTB_PKGS; do echo "CONFIG_PACKAGE_$i=y"; done)
-$(for i in $OTB_PKGS_M; do echo "CONFIG_PACKAGE_$i=m"; done)
+$(for i in otb $OTB_PKGS_INCLUDE; do echo "CONFIG_PACKAGE_$i=y"; done)
+$(for i in $OTB_PKGS_OPTIONNAL; do echo "CONFIG_PACKAGE_$i=m"; done)
 EOF
 
 echo "Building for arch $OTB_ARCH"
@@ -92,8 +87,13 @@ scripts/feeds clean
 scripts/feeds update -a
 scripts/feeds install -a -d y -f -p overthebox
 # shellcheck disable=SC2086
-scripts/feeds install -d y $OTB_PKGS
-scripts/feeds install -d m $OTB_PKGS_M
+scripts/feeds install -d y ${OTB_PKGS_INCLUDE}
+
+if [ -n "${OTB_PKGS_OPTIONNAL}" ]; then
+# shellcheck disable=SC2086
+scripts/feeds install -d m ${OTB_PKGS_OPTIONNAL}
+fi
+
 cp .config.keep .config
 
 make defconfig

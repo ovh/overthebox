@@ -1,0 +1,16 @@
+bmon
+bwm-ng
+dmesg
+ethtool
+htop
+iputils-ping
+mini_snmpd
+mtr
+nano
+netcat
+screen
+ss
+strace
+sysstat
+tcpdump-mini
+vim-full
