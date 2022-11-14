@@ -14,8 +14,9 @@ OTB_PKGS_M="prometheus-node-exporter-lua prometheus-node-exporter-lua-nat_traffi
 prometheus-node-exporter-lua-netstat prometheus-node-exporter-lua-openwrt
 prometheus-node-exporter-lua-textfile prometheus-node-exporter-lua-wifi
 prometheus-node-exporter-lua-wifi_stations"
+OTB_CONFIG_FILES=${OTB_CONFIG_FILES:-image_common image_busybox kmod_common kmod_network kmod_usb "arch_${OTB_ARCH}"}
 
-for i in $OTB_ARCH $OTB_CONFIG; do
+for i in $OTB_CONFIG_FILES; do
 	if [ ! -f "config/$i" ]; then
 		echo "Config $i not found !"
 		exit 1
@@ -26,7 +27,7 @@ done
 git submodule sync
 git submodule update --init --recursive --remote feeds/overthebox
 
-echo "submodule status :\n$(git submodule status)"
+printf "submodule status :\n%s\n", "$(git submodule status)"
 
 # CONFIG_VERSION parameters
 OTB_VERSION_SYSTEM=${OTB_VERSION_SYSTEM:=$(git describe --tag --always)}
@@ -65,9 +66,8 @@ src-link routing $(readlink -f feeds/routing)
 src-link overthebox $(readlink -f feeds/overthebox)
 EOF
 
-
 cat > openwrt/.config <<EOF
-$(for i in $OTB_ARCH $OTB_CONFIG; do cat "config/$i"; done)
+$(for i in $OTB_CONFIG_FILES; do cat "config/$i"; done)
 CONFIG_VERSION_DIST="$OTB_VERSION_DIST"
 CONFIG_VERSION_REPO="$OTB_VERSION_REPO"
 CONFIG_VERSION_NUMBER="$OTB_VERSION_SYSTEM"
