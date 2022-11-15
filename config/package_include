@@ -2,12 +2,15 @@ bmon
 bwm-ng
 dmesg
 ethtool
+fuse-utils
+gdb
 htop
 iputils-ping
 mini_snmpd
 mtr
 nano
 netcat
+rsync
 screen
 ss
 strace
