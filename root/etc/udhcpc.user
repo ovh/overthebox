@@ -1,0 +1,136 @@
+#!/bin/sh
+# shellcheck disable=SC2154,SC1091,SC2039
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+_log() {
+	logger -p daemon.info -t "udhcpc.user" "$@"
+}
+
+manage_if0() {
+	UCI_TMP_DIR="/tmp/dhcpdiscovery"
+	mkdir -p "$UCI_TMP_DIR"
+	touch "$UCI_TMP_DIR/dhcpdiscovery"
+
+	uci -q -c "$UCI_TMP_DIR" batch <<-EOF
+	set dhcpdiscovery.$INTERFACE=lease
+	set dhcpdiscovery.$INTERFACE.timestamp=$(date +%s)
+	set dhcpdiscovery.$INTERFACE.lease=$lease
+	set dhcpdiscovery.$INTERFACE.ip=$ip
+	set dhcpdiscovery.$INTERFACE.siaddr=$siaddr
+	set dhcpdiscovery.$INTERFACE.subnet=$subnet
+	set dhcpdiscovery.$INTERFACE.timezone=$timezone
+	set dhcpdiscovery.$INTERFACE.router=$router
+	set dhcpdiscovery.$INTERFACE.hostname=$hostname
+	set dhcpdiscovery.$INTERFACE.domain=$domain
+	set dhcpdiscovery.$INTERFACE.ipttl=$ipttl
+	set dhcpdiscovery.$INTERFACE.mtu=$mtu
+	set dhcpdiscovery.$INTERFACE.broadcast=$broadcast
+	set dhcpdiscovery.$INTERFACE.serverid=$serverid
+	commit dhcpdiscovery
+	EOF
+
+	uci -q show network | grep -sq "network\\.if.*\\.gateway='$router'" && return
+
+	# Guess the new interface id
+	_id=1
+	while uci -q get "network.if$_id" >/dev/null; do
+		_id=$((_id+1))
+	done
+
+	if uci -q get "network.lan_if$_id" >/dev/null; then
+		_device="$(uci -q get "network.${INTERFACE}_dev.device")" || return
+		_macaddr="$(cat "/sys/class/net/$DEVICE/address")" || return
+
+		_log "create interface if$_id with ip $ip"
+
+		uci -q batch <<-EOF
+		set network.if${_id}_dev=device
+		set network.if${_id}_dev.name=if$_id
+		set network.if${_id}_dev.type=macvlan
+		set network.if${_id}_dev.device=$_device
+		set network.if${_id}_dev.macaddr=$_macaddr
+		set network.if${_id}=interface
+		set network.if${_id}.device=if$_id
+		set network.if${_id}.proto=static
+		set network.if${_id}.ipaddr=$ip
+		set network.if${_id}.netmask=$subnet
+		set network.if${_id}.multipath=on
+		set network.if${_id}.gateway="$router"
+		set network.if${_id}.dns="$dns"
+		set network.if${_id}.ipv6="0"
+		set network.${INTERFACE}_dev.macaddr=auto.if$_id
+		commit network
+		add_list firewall.wan.network=if$_id
+		commit firewall
+		set dhcp.if${_id}=dhcp
+		set dhcp.if${_id}.interface=if${_id}
+		set dhcp.if${_id}.start=1
+		set dhcp.if${_id}.leasetime=12h
+		set dhcp.if${_id}.dynamicdhcp=0
+		set dhcp.if${_id}.force=1
+		set dhcp.if${_id}_gw=tag
+		add_list dhcp.if${_id}_gw.dhcp_option=1,$subnet
+		add_list dhcp.if${_id}_gw.dhcp_option=3,$router
+		add_list dhcp.if${_id}_gw.dhcp_option=6,${dns// /,}
+		commit dhcp
+		EOF
+	else
+		# lan_ifX are IP aliases on the lan
+		# Those are needed in order to tell the DHCP server to bind on the LAN and
+		# offer static leases on all its ranges
+
+		_log "create interface lan_if$_id with ip $ip"
+
+		if [ "$(uci -q get "network.lan.type")" = bridge ]; then
+			lan_device="br-lan"
+		else
+			lan_device="$(uci -q get network.lan.device)"
+		fi
+
+		uci -q batch <<-EOF
+		set network.lan_if${_id}=interface
+		set network.lan_if${_id}.proto=static
+		set network.lan_if${_id}.device=$lan_device
+		set network.lan_if${_id}.ipaddr=$ip
+		set network.lan_if${_id}.netmask=$subnet
+		set network.${INTERFACE}_dev.macaddr=auto.lan_if$_id
+		commit network
+		EOF
+	fi
+}
+
+fix_ip() {
+	original_ip="$ip"
+
+	# Naively increment the last part of the IP to find an unused one
+	while ip -4 -o addr | grep -s -v "$DEVICE" | grep -s -q "inet $ip/"; do
+		ip="${ip%.*}.$((${ip##*.}+1))"
+	done
+
+	[ "$original_ip" = "$ip" ] && return 0
+	ipcalc.sh "$ip" | grep -s -q "IP=$ip" || return 1
+
+	deconfig_interface
+	setup_interface
+}
+
+DEVICE="$interface"
+
+case "$1" in
+	bound|renew) ;;
+	*) exit 0 ;;
+esac
+
+[ "$INTERFACE" ] || exit 0
+[ "$DEVICE"    ] || exit 0
+[ "$ip"        ] || exit 0
+[ "$router"    ] || exit 0
+
+_log "got udhcpc $1 on $INTERFACE"
+
+case "$INTERFACE" in
+	if0) manage_if0 ;;
+	*) fix_ip ;;
+esac
+
+[ -d /var/run/config.check ] || reload_config
