@@ -9,6 +9,7 @@ OTB_ARCH=${OTB_ARCH:-x86_64}
 
 OTB_CONFIG_FILES=${OTB_CONFIG_FILES:-image_common image_busybox kmod_common kmod_network kmod_usb "arch_${OTB_ARCH}"}
 OTB_PKGS_INCLUDE=$(cat "config/package_include")
+OTB_PKGS_OVERTHEBOX=$(cat "config/package_overthebox")
 OTB_PKGS_OPTIONNAL=$(cat "config/package_optionnal")
 
 for i in $OTB_CONFIG_FILES; do
@@ -54,6 +55,8 @@ cat >> openwrt/files/etc/banner <<EOF
 -----------------------------------------------------
 EOF
 
+echo "${OTB_VERSION_FEEDS}" | cut -c 2-6 > openwrt/files/etc/otb-version
+
 cat > openwrt/feeds.conf <<EOF
 src-link packages $(readlink -f feeds/packages)
 src-link luci $(readlink -f feeds/luci)
@@ -74,7 +77,7 @@ CONFIG_VERSION_MANUFACTURER_URL="$OTB_VERSION_MANUFACTURER_URL"
 CONFIG_VERSION_MANUFACTURER="$OTB_VERSION_MANUFACTURER"
 CONFIG_KERNEL_BUILD_DOMAIN="$OTB_KERNEL_BUILD_DOMAIN"
 CONFIG_KERNEL_BUILD_USER="$OTB_KERNEL_BUILD_USER"
-$(for i in otb $OTB_PKGS_INCLUDE; do echo "CONFIG_PACKAGE_$i=y"; done)
+$(for i in $OTB_PKGS_OVERTHEBOX $OTB_PKGS_INCLUDE; do echo "CONFIG_PACKAGE_$i=y"; done)
 $(for i in $OTB_PKGS_OPTIONNAL; do echo "CONFIG_PACKAGE_$i=m"; done)
 EOF
 
@@ -87,7 +90,7 @@ scripts/feeds clean
 scripts/feeds update -a
 scripts/feeds install -a -d y -f -p overthebox
 # shellcheck disable=SC2086
-scripts/feeds install -d y ${OTB_PKGS_INCLUDE}
+scripts/feeds install -d y ${OTB_PKGS_INCLUDE} ${OTB_PKGS_OVERTHEBOX}
 
 if [ -n "${OTB_PKGS_OPTIONNAL}" ]; then
 # shellcheck disable=SC2086
