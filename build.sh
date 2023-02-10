@@ -8,7 +8,7 @@ unset GREP_OPTIONS SED
 OTB_REPO=${OTB_REPO:-LOCAL}
 OTB_ARCH=${OTB_ARCH:-x86_64}
 OTB_CONFIG=${OTB_CONFIG:-net-full nice-bb usb-full legacy}
-OTB_PKGS=${OTB_PKGS:-vim-full netcat htop iputils-ping bmon bwm-ng screen mtr ss strace tcpdump-mini ethtool sysstat pciutils mini_snmpd dmesg nano}
+OTB_PKGS=${OTB_PKGS:-vim-full netcat htop iputils-ping bmon bwm-ng screen mtr ss strace tcpdump-mini ethtool sysstat pciutils mini_snmpd dmesg nano fuse-utils gdb rsync}
 
 # Optionnal package
 OTB_PKGS_M="prometheus-node-exporter-lua prometheus-node-exporter-lua-nat_traffic
