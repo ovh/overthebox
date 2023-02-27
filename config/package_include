@@ -15,7 +15,6 @@ iputils-ping
 kmod-ipt-raw
 kmod-nf-nathelper
 kmod-nf-nathelper-extra
-libcap
 libimobiledevice
 libustream-mbedtls
 lsblk
