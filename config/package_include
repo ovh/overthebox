@@ -9,7 +9,6 @@ ethtool
 fuse-utils
 gdb
 htop
-iperf3
 iptables-mod-trace
 iputils-ping
 kmod-ipt-raw
