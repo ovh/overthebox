@@ -23,3 +23,5 @@ CONFIG_PACKAGE_kmod-sctp=y
 CONFIG_PACKAGE_kmod-sdhci=y
 CONFIG_PACKAGE_kmod-serial-8250=y
 CONFIG_PACKAGE_kmod-stp=y
+CONFIG_PACKAGE_kmod-lib-zstd=y
+CONFIG_PACKAGE_kmod-tcp-bbr=y

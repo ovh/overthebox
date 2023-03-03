@@ -16,6 +16,7 @@ kmod-nf-nathelper
 kmod-nf-nathelper-extra
 libimobiledevice
 libustream-mbedtls
+libzstd
 lsblk
 mini_snmpd
 mtr
