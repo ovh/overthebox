@@ -1,0 +1,12 @@
+#!/bin/sh
+# vim: set noexpandtab tabstop=4 shiftwidth=4 softtabstop=4 :
+
+# This script will be executed once
+# the system init finished.
+
+# force usb switch in order to switch 4G key from CD-ROM to usb-cdc
+/sbin/usbmode -l
+/bin/sleep 2
+/sbin/usbmode -s
+
+exit 0
