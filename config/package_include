@@ -9,11 +9,7 @@ ethtool
 fuse-utils
 gdb
 htop
-iptables-mod-trace
 iputils-ping
-kmod-ipt-raw
-kmod-nf-nathelper
-kmod-nf-nathelper-extra
 libimobiledevice
 libustream-mbedtls
 libzstd
@@ -38,3 +34,4 @@ tcpdump-mini
 usb-modeswitch
 usbmuxd
 vim-full
+lscpu
