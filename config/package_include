@@ -22,6 +22,7 @@ mini_snmpd
 mtr
 nano
 netcat
+openssh-sftp-server
 px5g-mbedtls
 python3-light
 rng-tools
