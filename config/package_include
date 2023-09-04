@@ -24,6 +24,7 @@ mtr
 nano
 netcat
 px5g-mbedtls
+python3-light
 rng-tools
 rsync
 screen
