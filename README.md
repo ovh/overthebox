@@ -1,22 +1,25 @@
 # OverTheBox
 
-Version: v0.6.35
+Version: v0.8.1
 
-OverTheBox is an open source solution developed by OVH to aggregate and encrypt multiple internet connections and terminates it over OVH/Cloud infrastructure which make clients benefit security, reliability, net neutrality, as well as dedicated public IP.
+OverTheBox is an open source solution developed by OVHcloud to aggregate and encrypt multiple internet connections and terminates it over OVHcloud infrastructure which make clients benefit security, reliability, net neutrality, as well as dedicated public IPv4.
 
 The aggregation is based on MPTCP, which is ISP, WAN type, and latency independent "whether it was Fiber, VDSL, SHDSL, ADSL or even 4G", different scenarios can be configured to have either aggregation or failover based on MPTCP.
 
-The solution takes advantage of the OpenWRT/LEDE system, which is user friendly and also adds the possibility of installing other packages like VPN, QoS, routing protocols, monitoring, etc. through web-interface or terminal.
+The solution takes advantage of the OpenWRT system, which is user friendly and also adds the possibility of installing other packages like VPN, QoS, routing protocols, monitoring, etc. through web-interface or terminal.
 
-
-More information is available here:
+More informations on our commercial offer is available here:
 [https://www.ovhtelecom.fr/overthebox/](https://www.ovhtelecom.fr/overthebox/)
 
+## Changelog
+
+* [English](CHANGELOG.md)
+* [Français](CHANGELOG_fr.md)
 
 ## Install from pre-compiled images
 
 Guide to install the image is available in french [here](https://docs.ovh.com/fr/overthebox/).
-You can download all supported images [here](http://downloads.overthebox.net/). This images are built by circle-ci on every new commit.
+You can download all supported images [here](http://downloads.overthebox.net/).
 
 ### On Linux
 
@@ -83,6 +86,5 @@ This [file](https://github.com/ovh/overthebox/blob/master/root/lib/preinit/00_re
 Our solution is mainly based on:
 
 * [OpenWRT](https://openwrt.org)
-* [LEDE](https://lede-project.org)
 * [MultiPath TCP (MPTCP)](https://multipath-tcp.org)
 * [Shadowsocks](https://shadowsocks.org)
