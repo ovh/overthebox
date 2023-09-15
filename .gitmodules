@@ -13,7 +13,7 @@
 [submodule "feeds/luci"]
 	path = feeds/luci
 	url = https://github.com/openwrt/luci
-	branch = for-15.05
+	branch = openwrt-21.02
 [submodule "feeds/overthebox"]
 	path = feeds/overthebox
 	url = ../overthebox-feeds
