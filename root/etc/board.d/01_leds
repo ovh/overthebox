@@ -7,7 +7,7 @@
 board_config_update
 
 case "$(board_name)" in
-pc-engines-apu*)
+pc-engines-pc-engines-apu*)
 	ucidef_set_led_default "power" "power" "apu2:green:power" "1"
 	ucidef_set_led_default "connectivity" "connectivity" "apu2:green:led2" "0"
 	ucidef_set_led_default "service" "service" "apu2:green:led3" "0"
