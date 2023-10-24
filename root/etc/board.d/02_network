@@ -18,17 +18,16 @@ case "$board" in
 		"17:lan" "18:lan" "13:wan13" "14:wan14"
 	;;
 *)
-	ucidef_set_interface_raw "lan" "eth0" "static"
+	ucidef_set_interface_lan "eth0"
 	num=0
 	for i in /sys/class/net/eth[!0]*; do
 		[ -e "$i" ] || continue
 		num=${i##*/eth}
-		ucidef_set_interface_raw "wan$num" "eth$num" "dhcp"
+		ucidef_set_interface "wan$num" ifname "eth$num" protocol "dhcp"
 	done
 	if [ "$num" = 0 ]; then
 		ucidef_set_interface_macaddr "lan" "auto"
-
-		ucidef_set_interface_raw "if0" "eth0" "dhcp"
+		ucidef_set_interface "if0" ifname "eth0" protocol "dhcp"
 		ucidef_set_interface_macaddr "if0" "auto"
 	fi
 	;;
