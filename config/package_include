@@ -18,6 +18,7 @@ libimobiledevice
 libustream-mbedtls
 libzstd
 lsblk
+luci-proto-qmi
 mini_snmpd
 mtr
 nano
@@ -25,6 +26,7 @@ netcat
 openssh-sftp-server
 px5g-mbedtls
 python3-light
+qmi-utils
 rng-tools
 rsync
 screen
@@ -33,6 +35,6 @@ strace
 sysstat
 tc
 tcpdump-mini
-usbmuxd
 usb-modeswitch
+usbmuxd
 vim-full
