@@ -8,6 +8,7 @@ unset GREP_OPTIONS SED
 OTB_ARCH=${OTB_ARCH:-x86_64}
 
 OTB_CONFIG_FILES=${OTB_CONFIG_FILES:-image_common image_busybox kmod_common kmod_network kmod_usb "arch_${OTB_ARCH}"}
+OTB_CONFIG_LUCI_LANGS=$(cat "config/luci_languages")
 OTB_PKGS_INCLUDE=$(cat "config/package_include")
 OTB_PKGS_OVERTHEBOX=$(cat "config/package_overthebox")
 OTB_PKGS_OPTIONNAL=$(cat "config/package_optionnal")
@@ -66,6 +67,7 @@ EOF
 
 cat > openwrt/.config <<EOF
 $(for i in $OTB_CONFIG_FILES; do cat "config/$i"; done)
+$(for i in $OTB_CONFIG_LUCI_LANGS; do echo "CONFIG_LUCI_LANG_$i=y"; done)
 CONFIG_VERSION_DIST="$OTB_VERSION_DIST"
 CONFIG_VERSION_REPO="$OTB_VERSION_REPO"
 CONFIG_VERSION_NUMBER="$OTB_VERSION_SYSTEM"
@@ -97,7 +99,13 @@ if [ -n "${OTB_PKGS_OPTIONNAL}" ]; then
 scripts/feeds install -d m ${OTB_PKGS_OPTIONNAL}
 fi
 
+# Get i18n packages to ensure Web translation
+for lang in $OTB_CONFIG_LUCI_LANGS ; do
+OTB_PKGS_I18N=$(printf "%s\n%s" "$OTB_PKGS_I18N" "$(grep "luci-i18n-\w*-$lang" .config)")
+done
+
 cp .config.keep .config
+echo "$OTB_PKGS_I18N" >> .config
 
 make defconfig
 if ! make "$@"; then
