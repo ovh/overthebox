@@ -1,3 +1,5 @@
+arp-scan
+arp-scan-database
 collectd-mod-conntrack
 collectd-mod-cpufreq
 collectd-mod-df
