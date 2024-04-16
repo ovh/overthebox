@@ -9,4 +9,7 @@
 /bin/sleep 2
 /sbin/usbmode -s
 
+# Launch lte interface watchdog in bg
+/bin/otb-lte-watchdog &
+
 exit 0

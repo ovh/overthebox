@@ -14,15 +14,15 @@ libimobiledevice
 libustream-mbedtls
 libzstd
 lsblk
-luci-proto-qmi
+luci-proto-modemmanager
 mini_snmpd
+modemmanager
 mtr
 nano
 netcat
 openssh-sftp-server
 px5g-mbedtls
 python3-light
-qmi-utils
 rng-tools
 rsync
 screen
