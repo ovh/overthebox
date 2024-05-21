@@ -27,8 +27,6 @@ case "$board" in
 	done
 	if [ "$num" = 0 ]; then
 		ucidef_set_interface_macaddr "lan" "auto"
-		ucidef_set_interface "if0" ifname "eth0" protocol "dhcp"
-		ucidef_set_interface_macaddr "if0" "auto"
 	fi
 	;;
 esac
