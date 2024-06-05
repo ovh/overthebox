@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Device with a unique ethernet interface are no more supported**
 
+## [v0.9.4] - 2024-06-05
+### Fixed
+- luci: Registration don't block if a service doesn't have an associated device
+
 ## [v0.9.3] - 2024-02-22
 ### Added
 - luci: Add French translation on OverTheBox section

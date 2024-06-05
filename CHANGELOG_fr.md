@@ -9,6 +9,10 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 **Les appareils avec un port ethernet unique ne sont plus supportés**
 
+## [v0.9.4] - 2024-06-05
+### Corrections
+- luci: La section enregistrement ne se bloque plus si un service n'a pas d'appareil associé
+
 ## [v0.9.3] - 2024-02-22
 ### Ajouts
 - luci: Ajout de la traduction française de la section overthebox
