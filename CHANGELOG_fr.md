@@ -5,6 +5,24 @@ Tout les changements notable de ce projet seront documenté dans ce fichier
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
 et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# v1.0
+
+## [v1.0.0] - 2024-06-05
+### Ajouts
+- openwrt: Mise à jour vers la version 23.05.2
+- openwrt: Mise à jour du kernel linux en version 5.15.137 avec support de MPTCPv1
+- openwrt: Mise à jour des paquets pour supporter [nftables](https://openwrt.org/docs/guide-user/firewall/misc/nftables)
+- mptcp: Migration vers MPTCPv1, implementation officielle de [MPTCP](https://www.mptcp.dev/) dans le kernel linux
+- glorytun: Mise à jour vers v0.3.4, une version plannifiée pour la version v0.7 qui n'a jamais été déployée, ceci enlève le tunnel glorytun TCP. L'ensemble du traffic transit désormais par un unique tunnel UDP
+- shadowsocks-libev: Mise à jour pour supporter MPTCPv1
+- qos: Migration vers cake, cela permet une meilleur gestion de la QoS sans intervention utilisateur
+- uqmi: Amélioration de l'intégration d'uqmi pour le support des modules LTE en NVME
+
+### Suppressions
+- Suppression de glorytun-tcp, remplacé par un unique tunnel UDP
+- Suppression d'iptables, remplacé par netfilter
+- Suppression de MPTCPv0, le kernel linux n'inclus plus de patch pour supporter cette implémentation
+
 # v0.9
 
 **Les appareils avec un port ethernet unique ne sont plus supportés**
@@ -63,7 +81,7 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Résolution d'un bug sur les leds de l'OTB v2c introduit en version v0.9.0
 
 ## [v0.9.0] - 2023-05-17
-### Changed
+### Ajouts
 - openwrt: Mise à jour en 21.02.5
 - openwrt: Mise à jour du noyau linux en 5.4.217 patché avec mptcp v0.96
 - openwrt: Mise à jour des packages pour le support de Distributed Switch Architecture [DSA](https://openwrt.org/docs/guide-user/network/dsa/dsa-mini-tutorial)

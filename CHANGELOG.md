@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# v1.0
+
+## [v1.0.0] - 2024-06-05
+### Changed
+- openwrt: Upgrade to 23.05.2
+- openwrt: Upgrade linux kernel to 5.15.137 with MPTCPv1 upstream
+- openwrt: Update packages to support [nftables](https://openwrt.org/docs/guide-user/firewall/misc/nftables)
+- mptcp: Migration to MPTCPv1, official linux kernel implementation of [MPTCP](https://www.mptcp.dev/)
+- glorytun: Upgrade to v0.3.4 a version planned for never released v0.7, this remove glorytun TCP tunnel all traffic is now transmit through a unique UDP tunnel
+- shadowsocks-libev: Upgrade to support MPTCPv1
+- qos: Migration to cake, which allow a better QoS configuration out-of-the-box, without user intervention
+- uqmi: Improve integration of uqmi to support LTE nvme module
+
+### Removed
+- Removed glorytun-tcp, replaced by a unique UDP tunnel
+- Removed iptables, replaced by netfilter
+- Removed MPTCPv0, linux kernel doesn't include patch to support this implementation
+
 # v0.9
 
 **Device with a unique ethernet interface are no more supported**
