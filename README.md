@@ -1,6 +1,6 @@
 # OverTheBox
 
-Version: v0.9.4
+Version: v1.0.0
 
 OverTheBox is an open source solution developed by OVHcloud to aggregate and encrypt multiple internet connections and terminates it over OVHcloud infrastructure which make clients benefit security, reliability, net neutrality, as well as dedicated public IPv4.
 
@@ -86,5 +86,5 @@ This [file](https://github.com/ovh/overthebox/blob/master/root/lib/preinit/00_re
 Our solution is mainly based on:
 
 * [OpenWRT](https://openwrt.org)
-* [MultiPath TCP (MPTCP)](https://multipath-tcp.org)
+* [MultiPath TCP (MPTCP)](https://www.mptcp.dev/)
 * [Shadowsocks](https://shadowsocks.org)
