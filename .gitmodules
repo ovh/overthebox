@@ -1,7 +1,7 @@
 [submodule "openwrt"]
 	path = openwrt
 	url = https://github.com/ovh/overthebox-lede
-	branch = otb-mptcp-19.07.10
+	branch = otb-mptcp-19.07.10_2
 [submodule "feeds/packages"]
 	path = feeds/packages
 	url = https://github.com/openwrt/packages
