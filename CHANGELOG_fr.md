@@ -7,6 +7,24 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 # v1.0
 
+## [v1.0.1] - 2024-08-08
+### Ajouts
+- luci: Le serviceID peut maintenant être copié/collé sur la page d'enregistrement
+- luci: Ajout du paquet luci-app-nlbwmon
+- speedtest: Réimplémentation d'otb-action-speedtest avec librespeed
+
+### Modifications
+- autoqos: Différentes améliorations sur l'autoqos, SQM est automatiquement configurer sur les liens à faible bande passante.
+- speedtest: Mise à jour d'otb-test-download-shadowsocks pour utiliser librespeed
+
+### Corrections
+- luci: Le theme déprécié ovh est remplacé automatiquement par le theme boostrap lors de la mise à jour
+- system: Le fichier rc.local.user n'est plus écrasé en cas de mise à jour
+- glorytun: Correction mineur sur un cas specifique sur lien 4G sans internet
+
+### Suppressions
+- Suppression du paquet bandwidth remplacé par luci-app-nlbwmon
+
 ## [v1.0.0] - 2024-06-05
 ### Ajouts
 - openwrt: Mise à jour vers la version 23.05.2
