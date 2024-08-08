@@ -9,6 +9,14 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 **Les appareils avec un port ethernet unique ne sont plus supportés**
 
+## [v0.9.5] - 2024-08-08
+### Ajouts
+- luci: le serviceID peut maintenant être copié/collé sur la page d'enregistrement
+
+### Corrections
+- luci: Le theme déprécié ovh est remplacé automatiquement par le theme boostrap lors de la mise à jour
+- system: Le fichier rc.local.user n'est plus écrasé en cas de mise à jour
+
 ## [v0.9.4] - 2024-06-05
 ### Corrections
 - luci: La section enregistrement ne se bloque plus si un service n'a pas d'appareil associé

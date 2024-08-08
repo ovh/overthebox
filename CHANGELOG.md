@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Device with a unique ethernet interface are no more supported**
 
+## [v0.9.5] - 2024-08-08
+### Added
+- luci: serviceID can now be copy/paste on register page
+
+### Fixed
+- luci: Replace deprecated ovh theme by bootstrap on upgrade
+- system: File rc.local.user is no more override on upgrade
+
 ## [v0.9.4] - 2024-06-05
 ### Fixed
 - luci: Registration don't block if a service doesn't have an associated device
