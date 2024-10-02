@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 # v1.0
 
+## [v1.0.2] - 2024-10-02
+### Added
+- luci: add help section, with links to ovhcloud & openwrt documentation
+- luci: MPTCP status is visible in overview
+- openwrt: Add utility package qmi-utils, luci-proto-qmi, hwinfo, lscpu, pciutils and usbutils
+- openwrt: Add kernel module kmod-usb-storage-uas
+- openwrt: Add optionnal package minicom, speedtest-nperf
+
+### Changed
+- luci: Improve random color generation in graph
+- luci: Graph in overview section include all available interfaces
+- otb-lte-watchdog: Program is properly daemonize
+
+### Fixed
+- otb-tracker: LTE module is discovered automatically and no more hardcoded
+- luci: Overview don't crash if an interface do not have an associated device
+- luci: Remove service preload limit
+- overthebox: xtun is removed from configuration on upgrade from v0.9
+- lte: Interface is correctly configure on first boot
+- lte: Interface metrics are set higher than ethernet interface
+
+### Removed
+- luci: Remove realtime graph section in overthebox
+
 ## [v1.0.1] - 2024-08-08
 ### Added
 - luci: serviceID can now be copy/paste on register page
