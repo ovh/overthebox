@@ -37,6 +37,7 @@ collectd-mod-uptime
 collectd-mod-write-graphite
 collectd-mod-write-http
 kmod-pcengines-apuv2
+minicom
 prometheus-node-exporter-lua
 prometheus-node-exporter-lua-nat_traffic
 prometheus-node-exporter-lua-netstat
@@ -47,3 +48,4 @@ prometheus-node-exporter-lua-uci_dhcp_host
 prometheus-node-exporter-lua-wifi
 prometheus-node-exporter-lua-wifi_stations
 python3
+speedtest-netperf
