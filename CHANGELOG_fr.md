@@ -9,6 +9,14 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 **Les appareils avec un port ethernet unique ne sont plus supportés**
 
+## [v0.9.6] - 2024-10-03
+### Ajouts
+- luci: Ajout d'une section aide avec les liens vers la documentation ovhcloud et openwrt
+- luci: Le status de MPTCP est visible dans l'overview
+
+### Corrections
+- luci: Suppression de la limite de préchargement sur la page register
+
 ## [v0.9.5] - 2024-08-08
 ### Ajouts
 - luci: le serviceID peut maintenant être copié/collé sur la page d'enregistrement

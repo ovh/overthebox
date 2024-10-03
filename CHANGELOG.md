@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Device with a unique ethernet interface are no more supported**
 
+## [v0.9.6] - 2024-10-03
+### Added
+- luci: add help section, with links to ovhcloud & openwrt documentation
+- luci: MPTCP status is visible in overview
+
+### Fixed
+- luci: Remove service preload limit
+
 ## [v0.9.5] - 2024-08-08
 ### Added
 - luci: serviceID can now be copy/paste on register page
