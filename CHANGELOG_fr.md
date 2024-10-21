@@ -7,6 +7,25 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 # v1.0
 
+## [v1.0.3] - 2024-10-21
+### Modifications
+- system: Mise à jour vers [openWRT 23.05.5](https://openwrt.org/releases/23.05/notes-23.05.5)
+- system: Mise à jour des feeds luci vers [c344ad02a06a92fb9d8fab237cfc878a06b71ffd](https://github.com/openwrt/luci/tree/c344ad02a06a92fb9d8fab237cfc878a06b71ffd)
+- system: Mise à jour des feeds package vers [df37b4e764207e82347c38f1efa4f0fd2c87d4ab](https://github.com/openwrt/packages/tree/df37b4e764207e82347c38f1efa4f0fd2c87d4ab)
+- system: Mise à jour des feeds routing vers [e351d1e623e9ef2ab78f28cb1ce8d271d28c902d](https://github.com/openwrt/routing/tree/e351d1e623e9ef2ab78f28cb1ce8d271d28c902d)
+- mptcpd: Mise à jour vers [v0.12](https://github.com/multipath-tcp/mptcpd/releases/tag/v0.12)
+- otb-action-speedtest: Par défaut, le script utilise le format interactif, ajout du paramètre -j pour format json.
+
+### Corrections
+- glorytun: Prise en compte des liens mis en backup
+- glorytun: Passage du rate limit en auto, ce qui améliore le comportement
+- overthebox: Les erreurs de l'outil mmcli ne sont plus prises en compte dans les scripts pour éviter des logs inutiles
+- luci: Résolution d'un problème sur le graph multipath quand l'interface utilise un label avec un espace
+- otb-action-speedtest: Le script renvoie un json au format correct lorsqu'il est utilisé avec le paramètre -j
+
+### Suppressions
+- luci: Les options de controle de traffic dépréciées ont été supprimé des pages de configurations d'interface
+
 ## [v1.0.2] - 2024-10-02
 ### Ajouts
 - luci: Ajout d'une section aide avec les liens vers la documentation ovhcloud et openwrt

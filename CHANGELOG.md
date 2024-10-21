@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 # v1.0
+## [v1.0.3] - 2024-10-21
+### Changed
+- system: Upgrade to [openWRT 23.05.5](https://openwrt.org/releases/23.05/notes-23.05.5)
+- system: Update luci feeds to [c344ad02a06a92fb9d8fab237cfc878a06b71ffd](https://github.com/openwrt/luci/tree/c344ad02a06a92fb9d8fab237cfc878a06b71ffd)
+- system: Update package feeds to [df37b4e764207e82347c38f1efa4f0fd2c87d4ab](https://github.com/openwrt/packages/tree/df37b4e764207e82347c38f1efa4f0fd2c87d4ab)
+- system: Update routing feeds to [e351d1e623e9ef2ab78f28cb1ce8d271d28c902d](https://github.com/openwrt/routing/tree/e351d1e623e9ef2ab78f28cb1ce8d271d28c902d)
+- mptcpd: Upgrade to [v0.12](https://github.com/multipath-tcp/mptcpd/releases/tag/v0.12)
+- otb-action-speedtest: Change default behavior to use interactive formatting, use -j parameter for json output
+
+### Fixed
+- glorytun: Take in account link set in backup
+- glorytun: Use auto rate which improve behaviour
+- overthebox: Suppress mmcli error output in scripts to avoid unnecessary logs
+- luci: Fix an issue on multipath graph when a label with space was set
+- otb-action-speedtest: Script output a compliant json when used with -j parameter
+
+### Removed
+- luci: Removed deprecated traffic control options from interface configuration pages.
 
 ## [v1.0.2] - 2024-10-02
 ### Added
