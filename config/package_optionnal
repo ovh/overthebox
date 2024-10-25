@@ -38,6 +38,7 @@ collectd-mod-write-graphite
 collectd-mod-write-http
 kmod-pcengines-apuv2
 luci-app-pbr
+luci-proto-wireguard
 minicom
 pbr
 prometheus-node-exporter-lua
@@ -57,3 +58,4 @@ snmptrapd
 snmp-utils
 speedtest-netperf
 swconfig
+wireguard-tools
