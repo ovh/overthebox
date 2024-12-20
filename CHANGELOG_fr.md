@@ -6,6 +6,26 @@ Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/)
 et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 # v1.0
+## [v1.0.4] - 2024-12-20
+### Modifications
+- openwrt: Ajout des paquets optionnels luci-proto-wireguard, wireguard-tools, luci-app-pbr, pbr.
+- luci: L'action otb-action-speedtest peut être éxécutée depuis l'interface web.
+- luci: Les valeurs SQM sont affichées sur la carte réseau.
+- luci: Le paramètre "physicallayer" est affiché et modifiable dans la section "réseau > interfaces".
+- luci: Le paramètre MPTCP est affiché dans l'overview de la section "réseau > interface".
+- luci: La liste des services affichés sur la page enregistrement sont ordonné alphabétiquement.
+- overthebox: Ajout de l'outil otb-action-speedtest-udp pour mesurer la bande passante UDP.
+- overthebox: Ajout du support du paramètre "physicallayer", ce paramètre permet de mieux définir la technologie des liens (4g, 5g, adsl, vdsl, ethernet, satelitte). Cela permet d'optimiser la configuration d'auto-sqm, ainsi que glorytun.
+- auto-sqm: Configuration automatique du paramètre "physicallayer".
+- auto-sqm: Configuration automatique du paramètre SQM "link layer adaptation" sur les interfaces avec le paramètre "physicallayer" positionné sur ADSL/VDSL.
+
+### Corrections
+- glorytun: Désactivation de l'option "auto rate" sur les interfaces avec le paramètre "physicallayer" positionné sur 4G / 5G. Ce paramètre introduit des instablilités sur ce type de liens.
+- glorytun: Réduction du paramètre "max rate" sur les interfaces avec le paramètres "physicallayer" positionné sur ADSL/VDSL. Le nouveau ratio réflète plus précisément les limitations de bande passante de ces technologies.
+- overthebox: Les erreurs de l'outil mmcli ne sont plus prises en compte dans les scripts pour éviter des logs inutiles.
+- luci: Résolution d'un problème sur le graph multipath quand l'interface utilise un label avec un chiffre en premier charactère.
+- otb-action-speedtest: Le speedtest ne s'exécute plus sur les interfaces sans connectivité, ainsi que sur les liens UDP, les résultats sur ce type de lien étant inexacte.
+- auto-sqm: Correction du comportement sur OTB v2b.
 
 ## [v1.0.3] - 2024-10-21
 ### Modifications

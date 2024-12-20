@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 # v1.0
+## [v1.0.4] - 2024-12-20
+### Changed
+- openwrt: Add optional packages luci-proto-wireguard, wireguard-tools, luci-app-pbr, pbr.
+- luci: Speedtest can be execute from web interface.
+- luci: SQM values are displayed in network map.
+- luci: Parameter "physicallayer" is displayed and editable in section "network > interfaces".
+- luci: Parameter "MPTCP" is displayed in overview of section "network > interfaces".
+- luci: Service list shown in register page is ordered alphabetically
+- overthebox: Add tools otb-action-speedtest-udp to measure UDP bandwidth.
+- overthebox: Add support for interface parameter "physicallayer", which can be used to define link technology (4g, 5g, adsl, vdsl, ethernet, satelitte). This allows improvement in configuration tunning for auto-sqm and glorytun.
+- auto-sqm: Auto-detect physical layer.
+- auto-sqm: Automatically set SQM "link layer adaptation" on interface with "physicallayer" parameter set to ADSL/VDSL.
+
+### Fixed
+- glorytun: Disable auto rate on interface with "physicallayer" set to 4G/5G. This option introduced some instability on this kind of links.
+- glorytun: Reduce max rate on interface with "physicallayer" set to ADSL/VDSL. The new rate accurately reflects bandwith limitation of this technologies.
+- overthebox: Suppress mmcli error output in scripts to avoid unnecessary logs.
+- luci: Fix an issue on multipath graph when a label with first character was a number.
+- otb-action-speedtest: Speedtest does not run on down interface and on UDP links as it was inaccurate.
+- auto-sqm: Fix behaviour on OTB v2b.
+
 ## [v1.0.3] - 2024-10-21
 ### Changed
 - system: Upgrade to [openWRT 23.05.5](https://openwrt.org/releases/23.05/notes-23.05.5)
@@ -21,7 +42,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - overthebox: Suppress mmcli error output in scripts to avoid unnecessary logs
 - luci: Fix an issue on multipath graph when a label with space was set
 - otb-action-speedtest: Script output a compliant json when used with -j parameter
-
 ### Removed
 - luci: Removed deprecated traffic control options from interface configuration pages.
 
