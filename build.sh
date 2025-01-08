@@ -108,6 +108,7 @@ cp .config.keep .config
 echo "$OTB_PKGS_I18N" >> .config
 
 make defconfig
+sed -i 's/CP:=cp -fpR/CP:=cp -fR/g' ./openwrt/rules.mk
 if ! make "$@"; then
     make "$@" -j1 V=s 2>&1 | tee error.log
     exit 1
