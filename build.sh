@@ -108,6 +108,11 @@ cp .config.keep .config
 echo "$OTB_PKGS_I18N" >> .config
 
 make defconfig
+
+if [ "$(df . | awk 'NR==2 {print $1}')" = "grpcfuse" ]; then
+	sed -i 's/CP:=cp -fpR/CP:=cp -fR/g' ./rules.mk
+fi
+
 if ! make "$@"; then
     make "$@" -j1 V=s 2>&1 | tee error.log
     exit 1
