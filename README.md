@@ -1,6 +1,6 @@
 # OverTheBox
 
-Version: v1.0.4
+Version: v1.1.0
 
 OverTheBox is an open source solution developed by OVHcloud to aggregate and encrypt multiple internet connections and terminates it over OVHcloud infrastructure which make clients benefit security, reliability, net neutrality, as well as dedicated public IPv4.
 
@@ -8,8 +8,7 @@ The aggregation is based on MPTCP, which is ISP, WAN type, and latency independe
 
 The solution takes advantage of the OpenWRT system, which is user friendly and also adds the possibility of installing other packages like VPN, QoS, routing protocols, monitoring, etc. through web-interface or terminal.
 
-More informations on our commercial offer is available here:
-[https://www.ovhtelecom.fr/overthebox/](https://www.ovhtelecom.fr/overthebox/)
+More informations on our commercial offers are available at [ovhcloud.com](https://www.ovhcloud.com/fr/internet/overthebox/)
 
 ## Changelog
 

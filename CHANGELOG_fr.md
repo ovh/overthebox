@@ -5,6 +5,27 @@ Tout les changements notable de ce projet seront documenté dans ce fichier
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
 et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# v1.1
+## [v1.1.0] - 2025-02-28
+### Ajouts
+- system: Ajout d'outils pour le future support d'IPv6
+- packages: bash, arp-scan, pbr, collectd-mod-thermal, wireguard-tools sont installés par défaut
+- packages: llpd and dnsmasq-full sont disponibles en package optionnel
+
+### Modification
+- system: Mise à jour vers [openWRT 24.10.0](https://openwrt.org/releases/24.10/notes-24.10.0)
+- system: Mise à jour des feeds luci vers [802a31a2a7eda848c9d5c04b0166168256a833bc](https://github.com/openwrt/luci/tree/802a31a2a7eda848c9d5c04b0166168256a833bc)
+- system: Mise à jour des feeds packages vers [d83dbde71473afc03ecbf695aa3e9d52adf71470](https://github.com/openwrt/packages/tree/d83dbde71473afc03ecbf695aa3e9d52adf71470)
+- system: Mise à jour des feeds routing vers [c9b636698881059a3c981032770968f5a98ff201](https://github.com/openwrt/routing/tree/c9b636698881059a3c981032770968f5a98ff201)
+- system: Mise à jour du noyau linux vers 6.6.73
+- shadowsocks: Migration vers [shadowsocks-rust](https://github.com/shadowsocks/shadowsocks-rust)
+- shadowsocks: Le chiffrement par défaut passe de chacha20-ietf-poly1305 à aes-256-gcm
+- luci: Rebase luci-mod-network sur la version d'openwrt v24.10
+- luci: Les graphiques de température sont activés par défaut dans la page luci-mod-statistics
+
+### Suppressions
+- Suppression de shadowsocks-libev, remplacé par shadowsocks-rust
+
 # v1.0
 ## [v1.0.4] - 2024-12-20
 ### Modifications

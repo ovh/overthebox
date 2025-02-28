@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+# v1.1
+## [v1.1.0] - 2025-02-28
+### Added
+- system: Add tools for future IPv6 support
+- packages: bash, arp-scan, pbr, collectd-mod-thermal, wireguard-tools are included by default
+- packages: llpd and dnsmasq-full are available as optionnal packages
+
+### Changed
+- system: Upgrade to [openWRT 24.10.0](https://openwrt.org/releases/24.10/notes-24.10.0)
+- system: Update luci feeds to [802a31a2a7eda848c9d5c04b0166168256a833bc](https://github.com/openwrt/luci/tree/802a31a2a7eda848c9d5c04b0166168256a833bc)
+- system: Update packages feeds to [d83dbde71473afc03ecbf695aa3e9d52adf71470](https://github.com/openwrt/packages/tree/d83dbde71473afc03ecbf695aa3e9d52adf71470)
+- system: Update routing feeds to [c9b636698881059a3c981032770968f5a98ff201](https://github.com/openwrt/routing/tree/c9b636698881059a3c981032770968f5a98ff201)
+- system: Upgrade linux kernel to 6.6.73
+- shadowsocks: Migrate to [shadowsocks-rust](https://github.com/shadowsocks/shadowsocks-rust)
+- shadowsocks: Default cipher changed from chacha20-ietf-poly1305 to aes-256-gcm
+- luci: Rebase luci-mod-network on openwrt v24.10 version
+- luci: Temperature graphs are enabled by default in luci-mod-statistics
+
+### Removed
+- Removed shadowsocks-libev, replaced by shadowsocks-rust
+
 # v1.0
 ## [v1.0.4] - 2024-12-20
 ### Changed
@@ -42,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - overthebox: Suppress mmcli error output in scripts to avoid unnecessary logs
 - luci: Fix an issue on multipath graph when a label with space was set
 - otb-action-speedtest: Script output a compliant json when used with -j parameter
+
 ### Removed
 - luci: Removed deprecated traffic control options from interface configuration pages.
 
