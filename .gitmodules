@@ -1,19 +1,19 @@
 [submodule "openwrt"]
 	path = openwrt
 	url = https://github.com/ovh/overthebox-lede
-	branch = otb-mptcp-23.05.5
+	branch = otb-mptcp-24.10.0-rc7
 [submodule "feeds/packages"]
 	path = feeds/packages
 	url = https://github.com/openwrt/packages
-	branch = openwrt-23.05
+	branch = openwrt-24.10
 [submodule "feeds/routing"]
 	path = feeds/routing
 	url = https://github.com/openwrt-routing/packages
-	branch = openwrt-23.05
+	branch = openwrt-24.10
 [submodule "feeds/luci"]
 	path = feeds/luci
 	url = https://github.com/openwrt/luci
-	branch = openwrt-23.05
+	branch = openwrt-24.10
 [submodule "feeds/overthebox"]
 	path = feeds/overthebox
 	url = ../overthebox-feeds
