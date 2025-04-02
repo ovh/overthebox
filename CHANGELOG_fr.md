@@ -6,13 +6,26 @@ Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/)
 et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 # v1.1
+## [v1.1.1] - 2025-04-02
+### Ajouts
+- luci: Ajout de la page "multipath" qui centralise les configurations multipath et qos
+- luci: Ajout d'une action pour configurer automatiquement la QoS sur une interface
+
+### Modifications
+- glorytun: Le paramètre "physical layer" sur "satellite" active le mode "rate fixed"
+- auto-sqm: L'outil préserve la configuration sqm existante
+
+### Corrections
+- system: La configuration lan est préservée
+- system: La configuration lan est uniquement modifiée si le statut de l'IPv6 change
+
 ## [v1.1.0] - 2025-02-28
 ### Ajouts
 - system: Ajout d'outils pour le future support d'IPv6
 - packages: bash, arp-scan, pbr, collectd-mod-thermal, wireguard-tools sont installés par défaut
 - packages: llpd and dnsmasq-full sont disponibles en package optionnel
 
-### Modification
+### Modifications
 - system: Mise à jour vers [openWRT 24.10.0](https://openwrt.org/releases/24.10/notes-24.10.0)
 - system: Mise à jour des feeds luci vers [802a31a2a7eda848c9d5c04b0166168256a833bc](https://github.com/openwrt/luci/tree/802a31a2a7eda848c9d5c04b0166168256a833bc)
 - system: Mise à jour des feeds packages vers [d83dbde71473afc03ecbf695aa3e9d52adf71470](https://github.com/openwrt/packages/tree/d83dbde71473afc03ecbf695aa3e9d52adf71470)
