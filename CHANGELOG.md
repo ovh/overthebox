@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 # v1.1
+## [v1.1.2] - 2025-05-28
+### Added
+- system: Upgrade to [openWRT 24.10.1](https://openwrt.org/releases/24.10/notes-24.10.1)
+- system: Update luci feeds to [be769afc62310631509826e41863ec7a71e764a4](https://github.com/openwrt/luci/tree/be769afc62310631509826e41863ec7a71e764a4)
+- system: Update packages feeds to [234806df39e38734ce5a3dfe0d94f8811cb57440](https://github.com/openwrt/packages/tree/234806df39e38734ce5a3dfe0d94f8811cb57440)
+- system: Update routing feeds to [f2ee837d3714f86e9d636302e9f69612c71029cb](https://github.com/openwrt/routing/tree/f2ee837d3714f86e9d636302e9f69612c71029cb)
+- system: Upgrade linux kernel to 6.6.86
+- luci: IPv6 informations are shown on network map when enabled
+- system: Add TUNv6 firewall zone to block incoming IPv6 traffic
+
+### Changed
+- system: Tun firewall zone only applied to IPv4 traffic
+- system: Log are prefixed with caller instead of "otb"
+- otb: otb-action-configure rewritten in bash
+
+### Fixed
+- system: Reduce log output from otb-lte-watchdog
+- system: ASN tracking do not fail if interface use protocol PPP
+- luci: If interface use protocol PPP, public ip is shown instead of gateway
+- luci: Register do not block if service description is missing
+
 ## [v1.1.1] - 2025-04-02
 ### Added
 - luci: Add page to centralize multipath and qos settings

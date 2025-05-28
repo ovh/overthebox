@@ -6,6 +6,27 @@ Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/)
 et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 # v1.1
+## [v1.1.2] - 2025-05-28
+### Ajouts
+- system: Mise à jour vers [openWRT 24.10.1](https://openwrt.org/releases/24.10/notes-24.10.1)
+- system: Mise à jour des feeds luci vers [be769afc62310631509826e41863ec7a71e764a4](https://github.com/openwrt/luci/tree/be769afc62310631509826e41863ec7a71e764a4)
+- system: Mise à jour des feeds packages vers [234806df39e38734ce5a3dfe0d94f8811cb57440](https://github.com/openwrt/packages/tree/234806df39e38734ce5a3dfe0d94f8811cb57440)
+- system: Mise à jour des feeds routing vers [f2ee837d3714f86e9d636302e9f69612c71029cb](https://github.com/openwrt/routing/tree/f2ee837d3714f86e9d636302e9f69612c71029cb)
+- system: Mise à jour du noyau linux vers 6.6.86
+- luci: Les informations relatives à l'IPv6 sont exposées si l'IPv6 est activé
+- system: Ajout de la zone pare-feu "tunv6" pour bloquer le trafic IPv6 entrant
+
+### Modifications
+- system: Les règles de la zone pare-feu "tun" ne sont appliquées que sur le trafic IPv4
+- system: Les logs sont préfixés par l'appelant au lieu de "otb"
+- otb: otb-action-configure réécrit en bash
+
+### Corrections
+- system: Réduction des logs générés par otb-lte-watchdog
+- system: La récupération des informations d'ASN n'est plus en échec si l'interface utilise le protocole PPP
+- luci: L'IP publique est utilisée au lieu de l'adresse de passerelle sur les interfaces qui utilisent le protocole PPP
+- luci: La page enregistrement ne bloque plus si la description d'un service est manquante
+
 ## [v1.1.1] - 2025-04-02
 ### Ajouts
 - luci: Ajout de la page "multipath" qui centralise les configurations multipath et qos
