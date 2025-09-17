@@ -36,6 +36,7 @@ collectd-mod-write-http
 dnsmasq-full
 kmod-pcengines-apuv2
 llpd
+luci-app-nlbwmon
 minicom
 prometheus-node-exporter-lua
 prometheus-node-exporter-lua-hwmon
