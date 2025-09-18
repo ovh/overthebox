@@ -1,0 +1,87 @@
+name: otb-image-x86-template
+parameters:
+  - key: release
+    required: true
+    default: dev
+  - key: varset
+    default: otb-image
+    required: true
+spec: |-
+  jobs:
+    build:
+      vars:
+        - [[.params.varset]]
+      runs-on:
+        model: library/default-vm
+        flavor: b2-60-flex
+      steps:
+        - id: checkout
+          uses: actions/checkout
+          with:
+            submodules: recursive
+        - id: requirements
+          run: |-
+            #!/bin/bash
+            apt-get update && apt-get install -y --no-install-recommends build-essential clang \
+            flex bison g++ gawk gcc-multilib g++-multilib gettext git libncurses-dev libssl-dev \
+            python3-setuptools python3-distutils rsync swig unzip zlib1g-dev file wget
+        - id: build
+          uses: .cds/actions/otb-image-build-x86.yaml
+          with:
+            workspace: ${{ cds.workspace }}
+            branchName: ${{ git.ref_name }}
+            repoURL: ${{ vars.[[.params.varset]].repo-[[.params.release]] }}
+        - id: sign
+          uses: .cds/actions/otb-image-sign.yaml
+          with:
+            workspace: ${{ cds.workspace }}
+            key: ${{ vars.[[.params.varset]].signingKey }}
+            image: ${{ steps.build.outputs.imageName }}
+            prefix: otb-image-[[.params.release]]
+      outputs:
+        archive:
+          value: ${{ steps.sign.outputs.archive }}
+        channel:
+          value: ${{ steps.build.outputs.channel }}
+        majorVersion:
+          value: ${{ steps.build.outputs.majorVersion }}
+    release:
+    [[ if eq .params.release "prod" ]]
+      gate: manual
+    [[ end ]]
+      needs: [build]
+      vars:
+        - [[.params.varset]]
+      runs-on:
+        model: library/default-container
+      steps:
+        - id: releaseChannelOnPCS
+          uses: .cds/actions/otb-image-release-swift.yaml
+          with:
+            workspace: ${{ cds.workspace }}
+            archive: ${{ jobs.build.outputs.archive }}
+            channel: ${{ jobs.build.outputs.channel }}
+            swiftUser: ${{ vars.[[.params.varset]].user }}
+            swiftPass: ${{ vars.[[.params.varset]].pass }}
+            swiftBucket: device-image-[[.params.release]]
+            swiftTenant: ${{ vars.[[.params.varset]].tenant }}
+    [[ if eq .params.release "prod" ]]
+    archive:
+      gate: manual
+      needs: [build]
+      vars:
+        - [[.params.varset]]
+      runs-on:
+        model: library/default-container
+      steps:
+        - id: releaseArchiveOnPCS
+          uses: .cds/actions/otb-image-release-swift.yaml
+          with:
+            workspace: ${{ cds.workspace }}
+            archive: ${{ jobs.build.outputs.archive }}
+            channel: images/${{ jobs.build.outputs.majorVersion }}
+            swiftUser: ${{ vars.[[.params.varset]].user }}
+            swiftPass: ${{ vars.[[.params.varset]].pass }}
+            swiftBucket: device-image-[[.params.release]]
+            swiftTenant: ${{ vars.[[.params.varset]].tenant }}
+    [[ end ]]

@@ -1,0 +1,6 @@
+name: "otb-image-x86-dev"
+from: ".cds/workflow-templates/otb-image-x86-template.yaml"
+parameters:
+  release: "dev"
+  varset: "otb-image"
+on: [push]

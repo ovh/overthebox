@@ -1,0 +1,39 @@
+name: "otb-image-sign"
+description: "Sign overthebox image"
+inputs:
+  workspace:
+    description: "files location"
+  key:
+    description: "signing key"
+  image:
+    description: "otb image name"
+  prefix:
+    description: "prefix for archive name"
+outputs:
+  archive:
+    description: "image tar archive name"
+    value: ${{ steps.sign.outputs.OTB_IMAGE_TAR }}
+runs:
+  steps:
+    - id: sign
+      run: |-
+        #!/bin/bash
+        cd "${{ inputs.workspace }}"
+
+        echo "Signing image"
+        echo "untrusted comment: Build key" > "${{ inputs.workspace }}/key-build"
+        echo "${{ inputs.key }}" >> "${{ inputs.workspace }}/key-build"
+        ${{ inputs.workspace }}/sign.sh
+
+        ARCHIVE_NAME="${{ inputs.prefix }}-${{ inputs.image }}.tar.gz"
+        echo "Creating image archive $ARCHIVE_NAME"
+
+        tar cvzf "${{ inputs.workspace }}/$ARCHIVE_NAME" \
+          -C "${{ inputs.workspace }}/openwrt/bin" "targets" "packages"
+
+        worker export OTB_IMAGE_TAR $ARCHIVE_NAME
+    - id: upload
+      uses: actions/uploadArtifact
+      with:
+        path: "${{ inputs.workspace  }}/${{ steps.sign.outputs.OTB_IMAGE_TAR }}"
+        if-no-files-found: error
