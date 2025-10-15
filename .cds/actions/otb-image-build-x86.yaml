@@ -1,0 +1,71 @@
+name: otb-image-build-x86
+description: "Build overthebox image for x86_64"
+inputs:
+  workspace:
+    description: "files location"
+  repoURL:
+    description: "base repo url"
+  branchName:
+    description: "git branch name"
+outputs:
+  systemVersion:
+    description: "overthebox system version"
+    value: ${{ steps.build.outputs.OTB_SYSTEM_VERSION }}
+  feedsVersion:
+    description: "overthebox feeds version"
+    value: ${{ steps.build.outputs.OTB_FEEDS_VERSION }}
+  majorVersion:
+    description: "overthebox major version"
+    value: ${{ steps.build.outputs.OTB_MAJOR_VERSION }}
+  imageName:
+    description: "overthebox image version"
+    value: ${{ steps.build.outputs.OTB_IMAGE }}
+  channel:
+    description: "overthebox release channel"
+    value: ${{ steps.build.outputs.OTB_CHANNEL }}
+runs:
+  steps:
+    - id: build
+      run: |-
+        #!/bin/bash
+        cd "${{ inputs.workspace }}"
+
+        # Avoid user root warnings
+        export FORCE_UNSAFE_CONFIGURE=1
+
+        # Set OTB_IMAGE
+        export VERSION_SYSTEM=$(git -C ${{ inputs.workspace }} describe --tag --always)
+        export VERSION_FEEDS=$(git -C feeds/overthebox describe --tag --always)
+
+        export OTB_ARCH="x86_64"
+        export OTB_IMAGE="$VERSION_SYSTEM-$VERSION_FEEDS-$OTB_ARCH"
+
+        # Set OTB_REPO
+        export MAJOR_RELEASE=$(echo "$VERSION_SYSTEM" |cut -d '.' -f 1-2)
+        export OTB_REPO="${{ inputs.repoURL }}/$MAJOR_RELEASE"
+
+        # Set channel
+        BRANCH=${{ git.ref_name }}
+        if [ "$BRANCH" = "develop" ]; then
+          export CHANNEL="develop"
+        else
+          export CHANNEL=$(echo "$BRANCH" |cut -d '/' -f 2)
+        fi
+
+        # Build
+        NPROC=$(($(nproc)+1))
+        echo "Using $NPROC cpu to compile"
+        ${{ inputs.workspace }}/build.sh -j$NPROC
+
+        # Symlink latest
+        cd "${{ inputs.workspace }}/openwrt/bin/targets/x86/64"
+        find . -name "*-squashfs-combined-efi.img.gz" -exec cp '{}' latest.img.gz \;
+
+        cd "${{ inputs.workspace }}"
+
+        # Export var
+        worker export OTB_SYSTEM_VERSION $VERSION_SYSTEM
+        worker export OTB_FEEDS_VERSION $VERSION_FEEDS
+        worker export OTB_MAJOR_VERSION $MAJOR_RELEASE
+        worker export OTB_IMAGE $OTB_IMAGE
+        worker export OTB_CHANNEL $CHANNEL

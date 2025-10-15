@@ -1,0 +1,57 @@
+name: "otb-image-release-swift"
+description: "release overthebox image on pcs"
+inputs:
+  workspace:
+    description: "files location"
+  archive:
+    description: "tar archive to upload"
+  channel:
+    description: "release channel"
+  swiftUser:
+    description: "swift user"
+  swiftPass:
+    description: "swift user password"
+  swiftBucket:
+    description: "swift pcs bucket"
+  swiftTenant:
+    description: "swift pcs tenant"
+runs:
+  steps:
+    - id: download
+      uses: actions/downloadArtifact
+      with:
+        name: ${{ inputs.archive }}
+    - id: requirements
+      run: |-
+        #!/bin/bash
+        apt-get update && apt-get install -y --no-install-recommends rclone
+        cat << EOF > "${{ inputs.workspace }}/rclone.conf"
+        [remote]
+        type = swift
+        env_auth = false
+        auth_version = 3
+        auth = https://auth.cloud.ovh.net/v3
+        endpoint_type = public
+        tenant_domain = default
+        tenant = ${{ inputs.swiftTenant }}
+        domain = default
+        user = ${{ inputs.swiftUser }}
+        key = ${{ inputs.swiftPass }}
+        region = GRA
+        EOF
+    - id: release
+      run: |-
+        #!/bin/bash
+        cd "${{ inputs.workspace }}"
+
+        ARCHIVE="${{ inputs.archive }}"
+        SRC="${{ inputs.workspace }}/deploy/"
+        DEST="remote:${{ inputs.swiftBucket }}/${{ inputs.channel }}"
+
+        echo "untar $ARCHIVE"
+        mkdir -p "$SRC"
+
+        tar -xvzf "$ARCHIVE" -C "$SRC"
+
+        echo "rclone $SRC to $DEST"
+        rclone --config "${{ inputs.workspace }}/rclone.conf" sync -P -L "$SRC" "$DEST"
