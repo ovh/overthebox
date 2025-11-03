@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 # v1.1
+## [v1.1.3] - 2025-11-03
+### Added
+- system: Upgrade to [openWRT 24.10.2](https://openwrt.org/releases/24.10/notes-24.10.2)
+- system: Update luci feeds to [923f8d991a49dc3d899fd24fc92ae7b1653ee4d0](https://github.com/openwrt/luci/tree/923f8d991a49dc3d899fd24fc92ae7b1653ee4d0)
+- system: Update packages feeds to [dd6e009bde518e312c604f8dc6471e27c4404c97](https://github.com/openwrt/packages/tree/dd6e009bde518e312c604f8dc6471e27c4404c97)
+- system: Update routing feeds to [bdbd09d1338066832fbc33fb10d28daea6fe121f](https://github.com/openwrt/routing/tree/bdbd09d1338066832fbc33fb10d28daea6fe121f)
+- system: Upgrade linux kernel to 6.6.93
+- build: Migration to [CDSv2](https://ovh.github.io/cds/)
+
+### Changed
+- shadowsocks: Upgrade to v1.23.5
+- luci: Rebase luci-mod-network on openwrt v24.10.2 version
+- luci: App luci-app-nlbwmon is no more include by default but still available as an optionnal package
+
+### Fixed
+- otb-v2b: Swconfig should not override lan device
+- otb-v2b: Remove kernel console on TTYs0 at first boot
+
 ## [v1.1.2] - 2025-05-28
 ### Added
 - system: Upgrade to [openWRT 24.10.1](https://openwrt.org/releases/24.10/notes-24.10.1)

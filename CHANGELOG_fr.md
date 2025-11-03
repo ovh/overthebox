@@ -6,6 +6,24 @@ Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/)
 et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 # v1.1
+## [v1.1.3] - 2025-11-03
+### Ajouts
+- system: Mise à jour vers [openWRT 24.10.2](https://openwrt.org/releases/24.10/notes-24.10.2)
+- system: Mise à jour des feeds luci vers [923f8d991a49dc3d899fd24fc92ae7b1653ee4d0](https://github.com/openwrt/luci/tree/923f8d991a49dc3d899fd24fc92ae7b1653ee4d0)
+- system: Mise à jour des feeds packages vers [dd6e009bde518e312c604f8dc6471e27c4404c97](https://github.com/openwrt/packages/tree/dd6e009bde518e312c604f8dc6471e27c4404c97)
+- system: Mise à jour des feeds routing vers [bdbd09d1338066832fbc33fb10d28daea6fe121f](https://github.com/openwrt/routing/tree/bdbd09d1338066832fbc33fb10d28daea6fe121f)
+- system: Mise à jour du noyau linux vers 6.6.93
+- build: Migration vers [CDSv2](https://ovh.github.io/cds/)
+
+### Modifications
+- shadowsocks: Mise à jour vers v1.23.5
+- luci: Rebase luci-mod-network sur la version d'openwrt v24.10
+- luci: App luci-app-nlbwmon n'est plus inclus par défaut, mais reste disponible en paquet optionnel.
+
+### Corrections
+- otb-v2b: Swconfig ne modifie plus la configuration du lan
+- otb-v2b: Suppression de la console noyau sur TTYs0 au premier demarrage
+
 ## [v1.1.2] - 2025-05-28
 ### Ajouts
 - system: Mise à jour vers [openWRT 24.10.1](https://openwrt.org/releases/24.10/notes-24.10.1)

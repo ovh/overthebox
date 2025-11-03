@@ -1,0 +1,11 @@
+name: "otb-image-x86-prod"
+from: ".cds/workflow-templates/otb-image-x86-template.yaml"
+parameters:
+  release: "prod"
+  varset: "otb-image"
+on:
+  workflow-run:
+    - workflow: OTB/stash_ovh_net/sticky/overthebox/otb-image-x86-dev
+      status: [ Success ]
+      branches: [ 'release/*' ]
+      tags: [v*]
