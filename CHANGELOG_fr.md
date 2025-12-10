@@ -5,6 +5,12 @@ Tout les changements notable de ce projet seront documenté dans ce fichier
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
 et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.8.3] - 2025-12-10
+
+### Corrections
+
+- Correction du calcul du temps monotique de glorytun-udp
+
 ## [v0.8.2] - 2024-07-03
 
 ### Corrections
