@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **Device with a unique ethernet interface are no more supported**
 
+## [v0.9.7] - 2025-12-10
+
+### Fixed
+
+- Resolve monotonic time calculation in glorytun-udp
+
 ## [v0.9.6] - 2024-10-03
 ### Added
 - luci: add help section, with links to ovhcloud & openwrt documentation

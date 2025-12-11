@@ -9,6 +9,12 @@ et le projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 **Les appareils avec un port ethernet unique ne sont plus supportés**
 
+## [v0.9.7] - 2025-12-10
+
+### Corrections
+
+- Correction du calcul du temps monotique de glorytun-udp
+
 ## [v0.9.6] - 2024-10-03
 ### Ajouts
 - luci: Ajout d'une section aide avec les liens vers la documentation ovhcloud et openwrt
