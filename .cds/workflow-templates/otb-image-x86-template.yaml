@@ -7,6 +7,9 @@ parameters:
     default: otb-image
     required: true
 spec: |-
+  gates:
+    validate:
+      if: "${{ success() && gate.manual }}"
   jobs:
     build:
       vars:
@@ -47,7 +50,7 @@ spec: |-
           value: ${{ steps.build.outputs.majorVersion }}
     release:
     [[ if eq .params.release "prod" ]]
-      gate: manual
+      gate: validate
     [[ end ]]
       needs: [build]
       vars:
@@ -67,7 +70,7 @@ spec: |-
             swiftTenant: ${{ vars.[[.params.varset]].tenant }}
     [[ if eq .params.release "prod" ]]
     archive:
-      gate: manual
+      gate: validate
       needs: [build]
       vars:
         - [[.params.varset]]
